@@ -11,7 +11,7 @@ export default function Loading() {
       color: '#606060',
       letterSpacing: '0.15em',
     }}>
-      loading gridbox...
+      loading gridmint...
     </div>
   );
 }

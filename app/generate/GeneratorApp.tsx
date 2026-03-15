@@ -3,9 +3,9 @@
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePatternRenderer }           from '@/lib/use-pattern-renderer';
-import { getCSS }                       from '@/lib/patterns/engine';
-import { PATTERNS }                     from '@/lib/patterns/engine';
+import { getCSS, PATTERNS }             from '@/lib/patterns/engine';
 import { decodeState }                  from '@/lib/url-state';
+import { PRESETS }                      from '@/lib/patterns/presets';
 import { GeneratorSidebar }             from '@/components/generator/GeneratorSidebar';
 import { GeneratorCanvas }              from '@/components/generator/GeneratorCanvas';
 import { CodeOutput }                   from '@/components/generator/CodeOutput';
@@ -49,6 +49,19 @@ export default function GeneratorApp() {
     });
   }, [state]);
 
+  const handleRandomize = useCallback(() => {
+    // pick a random preset then randomize size/opacity/rotation slightly
+    const preset = PRESETS[Math.floor(Math.random() * PRESETS.length)];
+    setState({
+      ...preset.state,
+      size:      Math.floor(Math.random() * 40) + 8,
+      opacity:   Math.floor(Math.random() * 50) + 10,
+      thickness: Math.floor(Math.random() * 3) + 1,
+      rotation:  Math.floor(Math.random() * 180),
+    }, false);
+    showToast('randomized ✦');
+  }, [setState, showToast]);
+
   // Keyboard shortcuts
   useEffect(() => {
     const fn = (e: KeyboardEvent) => {
@@ -56,6 +69,7 @@ export default function GeneratorApp() {
       if (e.key === 'c' && !e.metaKey && !e.ctrlKey) handleCopyCSS();
       if (e.key === 's' && !e.metaKey && !e.ctrlKey) handleShare();
       if (e.key === 'r') resetState();
+      if (e.key === 'x') handleRandomize();
       if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
         const ids  = PATTERNS.map(p => p.id);
         const idx  = ids.indexOf(state.pattern);
@@ -67,22 +81,25 @@ export default function GeneratorApp() {
     };
     window.addEventListener('keydown', fn);
     return () => window.removeEventListener('keydown', fn);
-  }, [state, setState, resetState, handleCopyCSS, handleShare]);
+  }, [state, setState, resetState, handleCopyCSS, handleShare, handleRandomize]);
 
   return (
     <div className={styles.page}>
 
       {/* TOPBAR */}
       <header className={styles.topbar}>
-        <Link href="/" className={styles.topbarLogo}>gridbox</Link>
-        <span className={styles.topbarTitle}>Grid Box</span>
+        <Link href="/" className={styles.topbarLogo}>gridmint</Link>
+        <span className={styles.topbarTitle}>Gridmint</span>
         <div className={styles.topbarActions}>
+          <button className={`${styles.tbBtn} ${styles.tbRandom}`} onClick={handleRandomize} title="Randomize (X)">
+            ✦ random
+          </button>
           <button className={`${styles.tbBtn} ${styles.tbShare}`} onClick={handleShare}>
             ⇧ share
           </button>
           <a
             className={`${styles.tbBtn} ${styles.tbGithub}`}
-            href="https://github.com/vaibhxvvy/gridbox"
+            href="https://github.com/vaibhav/gridmint"
             target="_blank"
             rel="noopener noreferrer"
           >

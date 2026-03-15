@@ -1,0 +1,24 @@
+Business Source License 1.1
+
+Licensor: Vaibhav (github.com/vaibhav)
+Licensed Work: Gridmint
+Change Date: Four years from the date the Licensed Work is published
+Change License: MIT
+
+Use Limitation:
+The Licensed Work may not be used to provide a commercial hosted service
+that competes directly with gridmint.ink. Specifically, you may NOT:
+- Run a hosted version of Gridmint and charge users for access
+- Embed Gridmint in a commercial SaaS product without written permission
+- Resell or relicense the Licensed Work
+
+You MAY:
+- Use Gridmint freely at gridmint.ink (the official hosted version)
+- Copy and use generated CSS/code output in any personal or commercial project
+- Fork and modify for personal, non-commercial, or internal use
+- Contribute back via pull requests
+- Run locally for personal development and experimentation
+
+After the Change Date, the Licensed Work will be available under the MIT License.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.

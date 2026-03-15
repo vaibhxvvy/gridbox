@@ -5,12 +5,12 @@ export const metadata: Metadata = {
   title: 'Gridbox — CSS Background Pattern Generator',
   description:
     'Generate beautiful CSS background patterns instantly. Copy CSS, SCSS, Tailwind, React, Next.js or TSX. Zero dependencies.',
-  keywords: ['css background', 'pattern generator', 'background texture', 'gridbox', 'css patterns'],
-  metadataBase: new URL('https://gridbox.ink'),
+  keywords: ['css background', 'pattern generator', 'background texture', 'gridmint', 'css patterns'],
+  metadataBase: new URL('https://gridmint.ink'),
   openGraph: {
     title: 'Gridbox — CSS Background Pattern Generator',
     description: 'Pick a pattern. Tweak it. Copy the code in any format.',
-    url: 'https://gridbox.ink',
+    url: 'https://gridmint.ink',
     siteName: 'Gridbox',
     images: [{ url: '/og.png', width: 1200, height: 630 }],
     type: 'website',

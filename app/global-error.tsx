@@ -17,7 +17,7 @@ export default function GlobalError({
   return (
     <html lang="en">
       <body style={{ background: '#0a0a0a', color: '#f0f0f0', fontFamily: 'monospace', display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', flexDirection: 'column', gap: '20px', textAlign: 'center', padding: '20px' }}>
-        <div style={{ color: '#c8ff00', fontSize: '13px', letterSpacing: '0.15em', textTransform: 'uppercase' }}>gridbox</div>
+        <div style={{ color: '#c8ff00', fontSize: '13px', letterSpacing: '0.15em', textTransform: 'uppercase' }}>gridmint</div>
         <div style={{ fontSize: '12px', color: '#606060', maxWidth: '400px', lineHeight: '1.6' }}>
           something went wrong loading the app.<br />
           {error?.message && <span style={{ color: '#ff5555' }}>{error.message}</span>}

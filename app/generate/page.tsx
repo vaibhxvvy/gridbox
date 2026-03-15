@@ -11,7 +11,7 @@ const GeneratorApp = dynamic(() => import('./GeneratorApp'), {
       fontFamily: 'monospace', fontSize: '11px',
       color: '#606060', letterSpacing: '0.15em',
     }}>
-      loading gridbox...
+      loading gridmint...
     </div>
   ),
 });

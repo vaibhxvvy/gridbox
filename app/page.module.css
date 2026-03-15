@@ -21,7 +21,7 @@
 
 .navLogo {
   font-family: var(--gb-font-mono);
-  font-size: 14px;
+  font-size: 18px;
   font-weight: 700;
   color: var(--gb-text);
   letter-spacing: 0.05em;
@@ -29,11 +29,11 @@
 
 .navGithub {
   font-family: var(--gb-font-mono);
-  font-size: 10px;
+  font-size: 12px;
   color: var(--gb-muted2);
   text-decoration: none;
   border: 1px solid var(--gb-border);
-  padding: 6px 14px;
+  padding: 7px 16px;
   border-radius: 4px;
   transition: border-color 0.14s, color 0.14s;
 }
@@ -61,15 +61,15 @@
   gap: 8px;
   border: 1px solid var(--gb-border);
   border-radius: 999px;
-  padding: 6px 16px;
-  font-size: 10px;
+  padding: 7px 18px;
+  font-size: 12px;
   color: var(--gb-muted2);
   letter-spacing: 0.08em;
 }
 
 .badgeDot {
-  width: 6px;
-  height: 6px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
   background: var(--gb-accent);
   box-shadow: 0 0 6px var(--gb-accent);
@@ -84,13 +84,13 @@
 
 .badgeArrow {
   color: var(--gb-accent);
-  font-size: 11px;
+  font-size: 13px;
 }
 
 /* Headline */
 .headline {
   font-family: var(--gb-font-mono);
-  font-size: clamp(28px, 5vw, 52px);
+  font-size: clamp(32px, 5.5vw, 58px);
   font-weight: 700;
   line-height: 1.15;
   color: var(--gb-text);
@@ -100,10 +100,10 @@
 /* Sub */
 .sub {
   font-family: var(--gb-font-sans);
-  font-size: 14px;
-  line-height: 1.7;
+  font-size: 17px;
+  line-height: 1.75;
   color: var(--gb-muted2);
-  max-width: 480px;
+  max-width: 500px;
 }
 .sub em {
   font-style: normal;
@@ -121,7 +121,7 @@
 
 .ctaOutline {
   font-family: var(--gb-font-mono);
-  font-size: 11px;
+  font-size: 14px;
   letter-spacing: 0.06em;
   padding: 12px 20px;
   border: 1px solid var(--gb-border);
@@ -140,10 +140,10 @@
 
 .ctaFilled {
   font-family: var(--gb-font-mono);
-  font-size: 11px;
+  font-size: 14px;
   letter-spacing: 0.06em;
   font-weight: 700;
-  padding: 12px 20px;
+  padding: 13px 20px;
   border: 1px solid var(--gb-accent);
   border-radius: 5px;
   color: #000;
@@ -155,6 +155,11 @@
 .ctaFilled:hover {
   background: #fff;
   border-color: #fff;
+}
+
+/* Preview cell active — subtle white border only */
+.previewCellActive {
+  border-color: rgba(255,255,255,0.4) !important;
 }
 
 /* ── PREVIEW STRIP ── */
@@ -172,31 +177,46 @@
   min-width: 120px;
   display: flex;
   flex-direction: column;
-  text-decoration: none;
   border-right: 1px solid var(--gb-border);
+  cursor: pointer;
   transition: opacity 0.14s;
 }
 .previewCell:last-child { border-right: none; }
-.previewCell:hover { opacity: 0.75; }
+.previewCell:hover { opacity: 0.8; }
 
 .previewSwatch {
-  height: 80px;
-  position: relative;
-  overflow: hidden;
+  height: 88px;
+  background-repeat: repeat;
 }
-.previewOverlay {
-  position: absolute;
-  inset: 0;
+
+.previewFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 7px 10px;
+  border-top: 1px solid var(--gb-border);
 }
 
 .previewLabel {
   font-family: var(--gb-font-mono);
   font-size: 9px;
   color: var(--gb-muted);
-  padding: 8px 12px;
   letter-spacing: 0.08em;
-  border-top: 1px solid var(--gb-border);
   text-transform: uppercase;
+}
+
+.previewEdit {
+  font-family: var(--gb-font-mono);
+  font-size: 8px;
+  color: var(--gb-muted);
+  text-decoration: none;
+  letter-spacing: 0.05em;
+  opacity: 0;
+  transition: opacity 0.14s, color 0.14s;
+}
+.previewCell:hover .previewEdit {
+  opacity: 1;
+  color: var(--gb-accent);
 }
 
 /* ── FOOTER ── */
@@ -206,7 +226,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  font-size: 10px;
+  font-size: 11px;
   color: var(--gb-muted);
 }
 .footer a {

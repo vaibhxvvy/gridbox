@@ -64,18 +64,18 @@ export function ExportMenu({ state }: Props) {
     const blob = (canvas: HTMLCanvasElement, name: string, type = 'image/png', q = 1) =>
       canvas.toBlob(b => dl(URL.createObjectURL(b!), name), type, q);
 
-    if (id === 'png-512')  blob(renderOffscreen(state, 512, 512),   `gridbox-${state.pattern}-512.png`);
-    if (id === 'png-1080') blob(renderOffscreen(state, 1920, 1080), `gridbox-${state.pattern}-1080.png`);
-    if (id === 'png-4k')   blob(renderOffscreen(state, 3840, 2160), `gridbox-${state.pattern}-4k.png`);
-    if (id === 'jpg-1080') blob(renderOffscreen(state, 1920, 1080), `gridbox-${state.pattern}-1080.jpg`, 'image/jpeg', 0.92);
+    if (id === 'png-512')  blob(renderOffscreen(state, 512, 512),   `gridmint-${state.pattern}-512.png`);
+    if (id === 'png-1080') blob(renderOffscreen(state, 1920, 1080), `gridmint-${state.pattern}-1080.png`);
+    if (id === 'png-4k')   blob(renderOffscreen(state, 3840, 2160), `gridmint-${state.pattern}-4k.png`);
+    if (id === 'jpg-1080') blob(renderOffscreen(state, 1920, 1080), `gridmint-${state.pattern}-1080.jpg`, 'image/jpeg', 0.92);
     if (id === 'svg') {
       const w = state.size * 8;
       const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${w}"><rect width="100%" height="100%" fill="${state.bgColor}"/></svg>`;
-      dl('data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg), `gridbox-${state.pattern}.svg`);
+      dl('data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg), `gridmint-${state.pattern}.svg`);
     }
     if (id === 'css-file') {
       const css = `.bg-pattern {\n  ${getCSS(state).split('\n').join('\n  ')}\n}`;
-      dl('data:text/css;charset=utf-8,' + encodeURIComponent(css), `gridbox-${state.pattern}.css`);
+      dl('data:text/css;charset=utf-8,' + encodeURIComponent(css), `gridmint-${state.pattern}.css`);
     }
   }, [state]);
 
