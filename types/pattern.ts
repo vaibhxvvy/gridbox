@@ -9,12 +9,13 @@ export interface PatternState {
   thickness: number;
   rotation:  number;
   animation: AnimationDir;
+  animSpeed: number; // px/sec, 10-200
 }
 
 export interface Pattern {
   id:   string;
   name: string;
-  draw: (ctx: CanvasRenderingContext2D, s: PatternState, extMult?: number) => void;
+  draw: (ctx: CanvasRenderingContext2D, s: PatternState, extMult?: number, offsetX?: number, offsetY?: number) => void;
   css:  (s: PatternState) => string;
 }
 

@@ -36,11 +36,13 @@ function drawSetup(
   W: number,
   H: number,
   extMult: number,
+  offsetX = 0,
+  offsetY = 0,
 ) {
   ctx.save();
   ctx.translate(W / 2, H / 2);
   ctx.rotate((rot * Math.PI) / 180);
-  ctx.translate((-W * extMult) / 2, (-H * extMult) / 2);
+  ctx.translate((-W * extMult) / 2 + offsetX, (-H * extMult) / 2 + offsetY);
 }
 
 // ── pattern definitions ──────────────────────────────────────────────
@@ -78,10 +80,10 @@ export const PATTERNS: Pattern[] = [
   // ── DOTS ──
   {
     id: 'dots', name: 'Dots',
-    draw(ctx, { patColor, opacity, size, thickness, rotation }, extMult = 5) {
+    draw(ctx, { patColor, opacity, size, thickness, rotation }, extMult = 5, offsetX = 0, offsetY = 0) {
       const W = ctx.canvas.width, H = ctx.canvas.height;
       const [r, g, b] = hexToRgb(patColor);
-      drawSetup(ctx, rotation, W, H, extMult);
+      drawSetup(ctx, rotation, W, H, extMult, offsetX, offsetY);
       ctx.fillStyle = `rgba(${r},${g},${b},${opacity / 100})`;
       const rad = Math.max(0.5, thickness * 0.7);
       const ext = Math.max(W, H) * extMult;
@@ -103,10 +105,10 @@ export const PATTERNS: Pattern[] = [
   // ── GRID ──
   {
     id: 'grid', name: 'Grid',
-    draw(ctx, { patColor, opacity, size, thickness, rotation }, extMult = 5) {
+    draw(ctx, { patColor, opacity, size, thickness, rotation }, extMult = 5, offsetX = 0, offsetY = 0) {
       const W = ctx.canvas.width, H = ctx.canvas.height;
       const [r, g, b] = hexToRgb(patColor);
-      drawSetup(ctx, rotation, W, H, extMult);
+      drawSetup(ctx, rotation, W, H, extMult, offsetX, offsetY);
       ctx.strokeStyle = `rgba(${r},${g},${b},${opacity / 100})`; ctx.lineWidth = thickness;
       const ext = Math.max(W, H) * extMult;
       for (let x = 0; x <= ext; x += size) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, ext); ctx.stroke(); }
@@ -124,10 +126,10 @@ export const PATTERNS: Pattern[] = [
   // ── RECT ──
   {
     id: 'rect', name: 'Rectangle',
-    draw(ctx, { patColor, opacity, size, thickness, rotation }, extMult = 5) {
+    draw(ctx, { patColor, opacity, size, thickness, rotation }, extMult = 5, offsetX = 0, offsetY = 0) {
       const W = ctx.canvas.width, H = ctx.canvas.height;
       const [r, g, b] = hexToRgb(patColor);
-      drawSetup(ctx, rotation, W, H, extMult);
+      drawSetup(ctx, rotation, W, H, extMult, offsetX, offsetY);
       ctx.strokeStyle = `rgba(${r},${g},${b},${opacity / 100})`; ctx.lineWidth = thickness;
       const hs = size * 0.5, ext = Math.max(W, H) * extMult;
       for (let x = 0; x <= ext; x += size) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, ext); ctx.stroke(); }
@@ -146,7 +148,7 @@ export const PATTERNS: Pattern[] = [
   // ── DIAGONAL ──
   {
     id: 'diagonal', name: 'Diagonal',
-    draw(ctx, { patColor, opacity, size, thickness, rotation }, extMult = 5) {
+    draw(ctx, { patColor, opacity, size, thickness, rotation }, extMult = 5, offsetX = 0, offsetY = 0) {
       const W = ctx.canvas.width, H = ctx.canvas.height;
       const [r, g, b] = hexToRgb(patColor);
       drawSetup(ctx, rotation + 45, W, H, extMult);
@@ -165,10 +167,10 @@ export const PATTERNS: Pattern[] = [
   // ── CROSSHATCH ──
   {
     id: 'hatch', name: 'Hatch',
-    draw(ctx, { patColor, opacity, size, thickness, rotation }, extMult = 5) {
+    draw(ctx, { patColor, opacity, size, thickness, rotation }, extMult = 5, offsetX = 0, offsetY = 0) {
       const W = ctx.canvas.width, H = ctx.canvas.height;
       const [r, g, b] = hexToRgb(patColor);
-      drawSetup(ctx, rotation, W, H, extMult);
+      drawSetup(ctx, rotation, W, H, extMult, offsetX, offsetY);
       ctx.strokeStyle = `rgba(${r},${g},${b},${opacity / 100})`; ctx.lineWidth = thickness;
       const ext = Math.max(W, H) * extMult;
       for (let i = -ext; i < ext * 2; i += size) {
@@ -187,10 +189,10 @@ export const PATTERNS: Pattern[] = [
   // ── CARBON ──
   {
     id: 'carbon', name: 'Carbon',
-    draw(ctx, { patColor, opacity, size, rotation }, extMult = 5) {
+    draw(ctx, { patColor, opacity, size, rotation }, extMult = 5, offsetX = 0, offsetY = 0) {
       const W = ctx.canvas.width, H = ctx.canvas.height;
       const [r, g, b] = hexToRgb(patColor);
-      drawSetup(ctx, rotation, W, H, extMult);
+      drawSetup(ctx, rotation, W, H, extMult, offsetX, offsetY);
       const hs = size / 2, ext = Math.max(W, H) * extMult;
       const a1 = (opacity / 100 * 0.15).toFixed(3);
       const a2 = (opacity / 100 * 0.30).toFixed(3);
@@ -215,10 +217,10 @@ export const PATTERNS: Pattern[] = [
   // ── HALFTONE ──
   {
     id: 'halftone', name: 'Halftone',
-    draw(ctx, { patColor, opacity, size, thickness, rotation }, extMult = 5) {
+    draw(ctx, { patColor, opacity, size, thickness, rotation }, extMult = 5, offsetX = 0, offsetY = 0) {
       const W = ctx.canvas.width, H = ctx.canvas.height;
       const [r, g, b] = hexToRgb(patColor);
-      drawSetup(ctx, rotation, W, H, extMult);
+      drawSetup(ctx, rotation, W, H, extMult, offsetX, offsetY);
       const ext = Math.max(W, H) * extMult;
       const rows = Math.ceil(ext / (size * 0.866)) + 2;
       const cols = Math.ceil(ext / size) + 2;
@@ -244,10 +246,10 @@ export const PATTERNS: Pattern[] = [
   // ── PLUS ──
   {
     id: 'plus', name: 'Plus',
-    draw(ctx, { patColor, opacity, size, thickness, rotation }, extMult = 5) {
+    draw(ctx, { patColor, opacity, size, thickness, rotation }, extMult = 5, offsetX = 0, offsetY = 0) {
       const W = ctx.canvas.width, H = ctx.canvas.height;
       const [r, g, b] = hexToRgb(patColor);
-      drawSetup(ctx, rotation, W, H, extMult);
+      drawSetup(ctx, rotation, W, H, extMult, offsetX, offsetY);
       ctx.strokeStyle = `rgba(${r},${g},${b},${opacity / 100})`; ctx.lineWidth = thickness;
       const arm = size * 0.3, ext = Math.max(W, H) * extMult;
       for (let x = size / 2; x < ext; x += size)
@@ -268,10 +270,10 @@ export const PATTERNS: Pattern[] = [
   // ── HEX ──
   {
     id: 'hex', name: 'Hex',
-    draw(ctx, { patColor, opacity, size, thickness, rotation }, extMult = 5) {
+    draw(ctx, { patColor, opacity, size, thickness, rotation }, extMult = 5, offsetX = 0, offsetY = 0) {
       const W = ctx.canvas.width, H = ctx.canvas.height;
       const [r, g, b] = hexToRgb(patColor);
-      drawSetup(ctx, rotation, W, H, extMult);
+      drawSetup(ctx, rotation, W, H, extMult, offsetX, offsetY);
       ctx.strokeStyle = `rgba(${r},${g},${b},${opacity / 100})`; ctx.lineWidth = thickness;
       const hh = size * Math.sqrt(3) / 2, ext = Math.max(W, H) * extMult;
       const rows = Math.ceil(ext / (hh * 2)) + 3, cols = Math.ceil(ext / (size * 1.5)) + 3;
@@ -300,10 +302,10 @@ export const PATTERNS: Pattern[] = [
   // ── WAVES ──
   {
     id: 'waves', name: 'Waves',
-    draw(ctx, { patColor, opacity, size, thickness, rotation }, extMult = 5) {
+    draw(ctx, { patColor, opacity, size, thickness, rotation }, extMult = 5, offsetX = 0, offsetY = 0) {
       const W = ctx.canvas.width, H = ctx.canvas.height;
       const [r, g, b] = hexToRgb(patColor);
-      drawSetup(ctx, rotation, W, H, extMult);
+      drawSetup(ctx, rotation, W, H, extMult, offsetX, offsetY);
       ctx.strokeStyle = `rgba(${r},${g},${b},${opacity / 100})`; ctx.lineWidth = thickness;
       const amp = size * 0.4, freq = (Math.PI * 2) / (size * 1.5), ext = Math.max(W, H) * extMult;
       for (let sy = -size * 2; sy < ext; sy += size) {
@@ -327,10 +329,10 @@ export const PATTERNS: Pattern[] = [
   // ── CIRCUIT ──
   {
     id: 'circuit', name: 'Circuit',
-    draw(ctx, { patColor, opacity, size, thickness, rotation }, extMult = 5) {
+    draw(ctx, { patColor, opacity, size, thickness, rotation }, extMult = 5, offsetX = 0, offsetY = 0) {
       const W = ctx.canvas.width, H = ctx.canvas.height;
       const [r, g, b] = hexToRgb(patColor);
-      drawSetup(ctx, rotation, W, H, extMult);
+      drawSetup(ctx, rotation, W, H, extMult, offsetX, offsetY);
       ctx.strokeStyle = `rgba(${r},${g},${b},${opacity / 100})`;
       ctx.fillStyle   = `rgba(${r},${g},${b},${opacity / 100})`;
       ctx.lineWidth   = thickness;
@@ -380,11 +382,13 @@ export function drawPattern(
   ctx: CanvasRenderingContext2D,
   state: PatternState,
   extMult = 5,
+  offsetX = 0,
+  offsetY = 0,
 ) {
-  if (!ctx.canvas.width || !ctx.canvas.height) return; // never draw on unsized canvas
+  if (!ctx.canvas.width || !ctx.canvas.height) return;
   const pat = PATTERNS.find(p => p.id === state.pattern);
   if (!pat) return;
-  pat.draw(ctx, state, extMult);
+  pat.draw(ctx, state, extMult, offsetX, offsetY);
 }
 
 export function getCSS(state: PatternState): string {

@@ -10,18 +10,39 @@ interface Props {
 
 export function Presets({ onSelect }: Props) {
   return (
-    <div className={styles.grid}>
-      {PRESETS.map(p => (
-        <button
-          key={p.name}
-          className={styles.btn}
-          onClick={() => onSelect(p.state)}
-          title={p.name}
-        >
-          <span className={styles.dot} style={{ background: p.accent }} />
-          {p.name}
-        </button>
-      ))}
+    <div className={styles.wrap}>
+      <select
+        className={styles.select}
+        value=""
+        onChange={e => {
+          const preset = PRESETS.find(p => p.name === e.target.value);
+          if (preset) onSelect(preset.state);
+        }}
+      >
+        <option value="" disabled>choose a preset…</option>
+        {PRESETS.map(p => (
+          <option key={p.name} value={p.name}>
+            {p.name}
+          </option>
+        ))}
+      </select>
+      {/* Visual swatch grid — click to apply */}
+      <div className={styles.swatches}>
+        {PRESETS.map(p => (
+          <button
+            key={p.name}
+            className={styles.swatch}
+            onClick={() => onSelect(p.state)}
+            title={p.name}
+            style={{ background: p.state.bgColor }}
+          >
+            <span
+              className={styles.swatchDot}
+              style={{ background: p.accent }}
+            />
+          </button>
+        ))}
+      </div>
     </div>
   );
 }

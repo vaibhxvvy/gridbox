@@ -12,6 +12,7 @@ export const DEFAULT_STATE: PatternState = {
   thickness: 1,
   rotation:  0,
   animation: 'none',
+  animSpeed: 40,
 };
 
 export function encodeState(s: PatternState): string {
@@ -24,6 +25,7 @@ export function encodeState(s: PatternState): string {
     tk:  String(s.thickness),
     rot: String(s.rotation),
     an:  s.animation,
+    spd: String(s.animSpeed),
   });
   return '?' + p.toString();
 }
@@ -44,6 +46,7 @@ export function decodeState(search: string): PatternState {
   if (p.has('op'))  s.opacity   = Math.min(100, Math.max(1,  Number(p.get('op'))));
   if (p.has('tk'))  s.thickness = Math.min(20,  Math.max(1,  Number(p.get('tk'))));
   if (p.has('rot')) s.rotation  = Math.min(180, Math.max(0,  Number(p.get('rot'))));
+  if (p.has('spd')) s.animSpeed = Math.min(200, Math.max(10, Number(p.get('spd'))));
   if (p.has('an') && ANIM_DIRS.includes(p.get('an') as AnimationDir)) {
     s.animation = p.get('an') as AnimationDir;
   }

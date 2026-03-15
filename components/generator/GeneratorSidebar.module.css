@@ -52,7 +52,9 @@
   transition: border-color 0.12s, color 0.12s, background 0.12s;
   padding: 0;
 }
-.animBtn:hover { border-color: var(--gb-muted2); color: var(--gb-text); }
+.animControls {
+  margin-top: 8px;
+}
 .animBtnActive {
   border-color: var(--gb-accent) !important;
   color: var(--gb-accent) !important;

@@ -33,30 +33,16 @@ function dl(href: string, name: string) {
 
 export function ExportMenu({ state }: Props) {
   const [open, setOpen] = useState(false);
-  const btnRef  = useRef<HTMLButtonElement>(null);
-  const dropRef = useRef<HTMLDivElement>(null);
+  const wrapRef = useRef<HTMLDivElement>(null);
 
+  // Close on outside click
   useEffect(() => {
+    if (!open) return;
     const fn = (e: MouseEvent) => {
-      if (!btnRef.current?.contains(e.target as Node) &&
-          !dropRef.current?.contains(e.target as Node)) setOpen(false);
+      if (!wrapRef.current?.contains(e.target as Node)) setOpen(false);
     };
     document.addEventListener('mousedown', fn);
     return () => document.removeEventListener('mousedown', fn);
-  }, []);
-
-  useEffect(() => {
-    if (!open || !btnRef.current || !dropRef.current) return;
-    const br  = btnRef.current.getBoundingClientRect();
-    const dh  = dropRef.current.scrollHeight;
-    const pw  = Math.max(dropRef.current.offsetWidth, 192);
-    let top   = br.top - dh - 6;
-    if (top < 6) top = br.bottom + 6;
-    let left  = br.left;
-    if (left + pw > window.innerWidth - 6) left = window.innerWidth - pw - 6;
-    dropRef.current.style.top   = `${top}px`;
-    dropRef.current.style.left  = `${left}px`;
-    dropRef.current.style.width = `${pw}px`;
   }, [open]);
 
   const handle = useCallback((id: string) => {
@@ -80,12 +66,13 @@ export function ExportMenu({ state }: Props) {
   }, [state]);
 
   return (
-    <div className={styles.wrap}>
-      <button ref={btnRef} className={styles.btn} onClick={() => setOpen(o => !o)}>
+    <div className={styles.wrap} ref={wrapRef}>
+      <button className={styles.btn} onClick={() => setOpen(o => !o)}>
         export <span className={styles.caret}>▾</span>
       </button>
+      {/* Dropdown — CSS `bottom: 100%` so it always opens upward relative to button */}
       {open && (
-        <div ref={dropRef} className={styles.drop}>
+        <div className={styles.drop}>
           {OPTIONS.map(o => (
             <button key={o.id} className={styles.opt} onClick={() => handle(o.id)}>
               <span className={styles.badge}>{o.fmt}</span>

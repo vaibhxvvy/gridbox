@@ -1,26 +1,33 @@
-.wrap { position: relative; flex-shrink: 0; }
+.wrap { position: relative; flex-shrink: 0; display: flex; align-items: stretch; }
 
 .btn {
   font-family: var(--gb-font-mono);
-  font-size: 10px; font-weight: 700; letter-spacing: .08em;
-  padding: 8px 14px; border-radius: 5px; cursor: pointer;
+  font-size: 11px; font-weight: 700; letter-spacing: .08em;
+  padding: 10px 16px; cursor: pointer;
   display: flex; align-items: center; gap: 6px;
-  border: 1px solid var(--gb-border); background: var(--gb-s3); color: var(--gb-muted2);
+  border: none;
+  border-left: 1px solid var(--gb-border);
+  background: var(--gb-s3); color: var(--gb-muted2);
   transition: all .14s; white-space: nowrap; text-transform: uppercase;
 }
-.btn:hover { border-color: var(--gb-accent); color: var(--gb-accent); }
+.btn:hover { background: var(--gb-s2); color: var(--gb-accent); }
 .caret { font-size: 9px; opacity: .7; }
 
+/* Dropdown anchored ABOVE the button using bottom:100% */
 .drop {
-  position: fixed; z-index: 999;
+  position: absolute;
+  bottom: calc(100% + 4px);
+  right: 0;
+  z-index: 999;
+  min-width: 210px;
   background: var(--gb-s2); border: 1px solid var(--gb-border);
   border-radius: 6px; overflow: hidden;
-  box-shadow: 0 8px 28px rgba(0,0,0,.7);
+  box-shadow: 0 -4px 24px rgba(0,0,0,.7);
 }
 
 .opt {
-  width: 100%; font-family: var(--gb-font-mono); font-size: 10px;
-  color: var(--gb-muted2); padding: 9px 13px; cursor: pointer;
+  width: 100%; font-family: var(--gb-font-mono); font-size: 11px;
+  color: var(--gb-muted2); padding: 10px 14px; cursor: pointer;
   display: flex; align-items: center; gap: 8px;
   border: none; border-bottom: 1px solid var(--gb-border);
   background: transparent; text-align: left;
@@ -30,7 +37,7 @@
 .opt:hover { background: var(--gb-s3); color: var(--gb-accent); }
 
 .badge {
-  font-size: 7px; background: var(--gb-s3);
-  border: 1px solid var(--gb-border); padding: 1px 5px;
+  font-size: 8px; background: var(--gb-s3);
+  border: 1px solid var(--gb-border); padding: 2px 6px;
   border-radius: 3px; color: var(--gb-muted); flex-shrink: 0;
 }

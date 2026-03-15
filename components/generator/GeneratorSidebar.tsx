@@ -72,6 +72,18 @@ export function GeneratorSidebar({ state, thumbRefs, onChange, onReset }: Props)
             </button>
           ))}
         </div>
+        {state.animation !== 'none' && (
+          <div className={styles.animControls}>
+            <Slider
+              label="speed"
+              value={state.animSpeed ?? 40}
+              min={5}
+              max={200}
+              unit=""
+              onChange={v => onChange({ animSpeed: v })}
+            />
+          </div>
+        )}
       </section>
 
       {/* Colours */}

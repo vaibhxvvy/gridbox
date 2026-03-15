@@ -99,7 +99,7 @@ export default function GeneratorApp() {
             target="_blank"
             rel="noopener noreferrer"
           >
-            {stars} ★
+            star on github
           </a>
         </div>
       </header>
@@ -123,11 +123,7 @@ export default function GeneratorApp() {
             state={state}
           />
 
-          <div className={styles.codePanel}>
-            <CodeOutput state={state} />
-          </div>
-
-          {/* Info bar — fills remaining space at bottom, shows current state */}
+          {/* Info bar — sits directly below canvas, no gap */}
           <div className={styles.infoBar}>
             <span className={styles.infoPattern}>{state.pattern}</span>
             <span className={styles.infoSep}>·</span>
@@ -146,6 +142,11 @@ export default function GeneratorApp() {
               </>
             )}
             <span className={styles.infoRight}>830 × 467 · 16:9</span>
+          </div>
+
+          {/* Code panel — flex:1 expands to fill remaining space */}
+          <div className={styles.codePanel}>
+            <CodeOutput state={state} />
           </div>
 
         </div>

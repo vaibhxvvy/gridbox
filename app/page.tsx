@@ -113,7 +113,7 @@ export default function LandingPage() {
             rel="noopener noreferrer"
             style={isActive ? { borderColor: withAlpha(tc, 0.5), color: tc } : {}}
           >
-            {stars} ★
+            star on github
           </a>
         </div>
       </nav>
