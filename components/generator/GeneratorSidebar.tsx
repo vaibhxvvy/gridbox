@@ -1,12 +1,22 @@
 'use client';
 
-import type { PatternState } from '@/types/pattern';
+import type { PatternState, AnimationDir } from '@/types/pattern';
 import Link from 'next/link';
 import { PatternGrid } from './PatternGrid';
 import { Slider }      from './Slider';
 import { ColorPicker } from './ColorPicker';
 import { Presets }     from './Presets';
 import styles from './GeneratorSidebar.module.css';
+
+const ANIM_DIRS: { id: AnimationDir; label: string; icon: string }[] = [
+  { id: 'none',       label: 'off',        icon: '○' },
+  { id: 'left',       label: '←',          icon: '←' },
+  { id: 'right',      label: '→',          icon: '→' },
+  { id: 'up',         label: '↑',          icon: '↑' },
+  { id: 'down',       label: '↓',          icon: '↓' },
+  { id: 'diag-left',  label: '↙',          icon: '↙' },
+  { id: 'diag-right', label: '↘',          icon: '↘' },
+];
 
 interface Props {
   state:     PatternState;
@@ -40,10 +50,27 @@ export function GeneratorSidebar({ state, thumbRefs, onChange, onReset }: Props)
       <section className={styles.section}>
         <h3 className={styles.sectionTitle}>adjust</h3>
         <div className={styles.sliders}>
-          <Slider label="size"      value={state.size}      min={4}  max={state.pattern === 'rect' ? 240 : 80}  unit="px" onChange={v => onChange({ size: v })} />
-          <Slider label="opacity"   value={state.opacity}   min={1}  max={100} unit="%"  onChange={v => onChange({ opacity: v })} />
+          <Slider label="size"      value={state.size}      min={4}  max={state.pattern === 'rect' ? 240 : 80} unit="px" onChange={v => onChange({ size: v })} />
+          <Slider label="opacity"   value={state.opacity}   min={1}  max={100} unit="%" onChange={v => onChange({ opacity: v })} />
           <Slider label="thickness" value={state.thickness} min={1}  max={20}  unit="px" onChange={v => onChange({ thickness: v })} />
-          <Slider label="rotation"  value={state.rotation}  min={0}  max={180} unit="°"  onChange={v => onChange({ rotation: v })} />
+          <Slider label="rotation"  value={state.rotation}  min={0}  max={180} unit="°" onChange={v => onChange({ rotation: v })} />
+        </div>
+      </section>
+
+      {/* Animation */}
+      <section className={styles.section}>
+        <h3 className={styles.sectionTitle}>animate</h3>
+        <div className={styles.animGrid}>
+          {ANIM_DIRS.map(d => (
+            <button
+              key={d.id}
+              className={`${styles.animBtn} ${state.animation === d.id ? styles.animBtnActive : ''}`}
+              onClick={() => onChange({ animation: d.id })}
+              title={d.id === 'none' ? 'No animation' : `Animate ${d.id}`}
+            >
+              {d.icon}
+            </button>
+          ))}
         </div>
       </section>
 

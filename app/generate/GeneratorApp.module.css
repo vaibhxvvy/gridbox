@@ -88,6 +88,53 @@
   flex-shrink: 0;
 }
 
+/* Info bar — fills the empty space below code, shows current state */
+.infoBar {
+  flex: 1;
+  min-height: 32px;
+  background: var(--gb-s2);
+  border-top: 1px solid var(--gb-border);
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--gb-font-mono);
+  font-size: 10px;
+  color: var(--gb-muted);
+  overflow: hidden;
+}
+
+.infoPattern {
+  color: var(--gb-accent);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-size: 9px;
+}
+
+.infoSep { color: var(--gb-border); }
+
+.infoSwatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  border: 1px solid rgba(255,255,255,0.12);
+  flex-shrink: 0;
+}
+
+.infoAnim {
+  color: var(--gb-accent);
+  font-size: 9px;
+  letter-spacing: 0.06em;
+}
+
+.infoRight {
+  margin-left: auto;
+  color: var(--gb-muted);
+  font-size: 9px;
+  white-space: nowrap;
+}
+
 /* ── RESPONSIVE — TABLET ── */
 @media (max-width: 900px) {
   .tbBtn { padding: 7px 10px; font-size: 10px; }
@@ -137,4 +184,7 @@
 
   /* Code panel: no extra spacing */
   .codePanel { flex-shrink: 0; }
+
+  /* Info bar hidden on mobile */
+  .infoBar { display: none; }
 }

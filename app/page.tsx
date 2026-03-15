@@ -142,26 +142,20 @@ export default function LandingPage() {
         </p>
 
         <div className={styles.ctaGrid}>
-          {(['one click copy', 'live preview', 'explore'] as const).map(label => (
-            <Link
-              key={label}
-              href="/generate"
-              className={styles.ctaOutline}
-              style={isActive ? {
-                borderColor: withAlpha(tc, 0.45),
-                color: tc,
-                background: withAlpha(tc, 0.06),
-              } : {}}
-            >
-              {label}
-            </Link>
-          ))}
-          <a
-            href="https://github.com/vaibhxvvy/gridbox"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.ctaFilled}
-          >
+          <Link href="/generate" className={styles.ctaOutline}
+            style={isActive ? { borderColor: withAlpha(tc,0.45), color:tc, background:withAlpha(tc,0.06) } : {}}>
+            one click copy
+          </Link>
+          <Link href="/generate" className={styles.ctaOutline}
+            style={isActive ? { borderColor: withAlpha(tc,0.45), color:tc, background:withAlpha(tc,0.06) } : {}}>
+            live preview
+          </Link>
+          <Link href="/generate" className={styles.ctaOutline}
+            style={isActive ? { borderColor: withAlpha(tc,0.45), color:tc, background:withAlpha(tc,0.06) } : {}}>
+            explore
+          </Link>
+          <a href="https://github.com/vaibhxvvy/gridbox" target="_blank" rel="noopener noreferrer"
+            className={styles.ctaFilled}>
             contribute here
           </a>
         </div>

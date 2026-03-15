@@ -44,17 +44,14 @@ export default function GeneratorApp() {
   }, [showToast]);
 
   const handleRandomize = useCallback(() => {
-    const randomHex = () => '#' + Math.floor(Math.random() * 0xffffff).toString(16).padStart(6, '0');
-    // pick dark bg (low brightness) and bright pattern color
     const hue = Math.floor(Math.random() * 360);
     const bgColor  = `hsl(${hue}, ${Math.floor(Math.random()*30)}%, ${Math.floor(Math.random()*15 + 3)}%)`;
     const patColor = `hsl(${(hue + 120 + Math.floor(Math.random()*120)) % 360}, ${Math.floor(Math.random()*60+40)}%, ${Math.floor(Math.random()*40+50)}%)`;
     const patIds = PATTERNS.map(p => p.id);
-    const pattern = patIds[Math.floor(Math.random() * patIds.length)];
-    setState({
-      pattern,
-      bgColor,
-      patColor,
+    const pattern  = patIds[Math.floor(Math.random() * patIds.length)];
+    const anims: import('@/types/pattern').AnimationDir[] = ['none','left','right','up','down','diag-left','diag-right'];
+    const animation = anims[Math.floor(Math.random() * anims.length)];
+    setState({ pattern, bgColor, patColor, animation,
       size:      Math.floor(Math.random() * 40) + 8,
       opacity:   Math.floor(Math.random() * 50) + 10,
       thickness: Math.floor(Math.random() * 3) + 1,
@@ -123,10 +120,32 @@ export default function GeneratorApp() {
             canvasRef={canvasRef}
             onResize={handleResize}
             badgeText={badge}
+            state={state}
           />
 
           <div className={styles.codePanel}>
             <CodeOutput state={state} />
+          </div>
+
+          {/* Info bar — fills remaining space at bottom, shows current state */}
+          <div className={styles.infoBar}>
+            <span className={styles.infoPattern}>{state.pattern}</span>
+            <span className={styles.infoSep}>·</span>
+            <span>{state.size}px</span>
+            <span className={styles.infoSep}>·</span>
+            <span>{state.opacity}%</span>
+            <span className={styles.infoSep}>·</span>
+            <span>{state.thickness}px stroke</span>
+            <span className={styles.infoSep}>·</span>
+            <span className={styles.infoSwatch} style={{ background: state.bgColor }} />
+            <span className={styles.infoSwatch} style={{ background: state.patColor }} />
+            {state.animation !== 'none' && (
+              <>
+                <span className={styles.infoSep}>·</span>
+                <span className={styles.infoAnim}>⟳ {state.animation}</span>
+              </>
+            )}
+            <span className={styles.infoRight}>830 × 467 · 16:9</span>
           </div>
 
         </div>

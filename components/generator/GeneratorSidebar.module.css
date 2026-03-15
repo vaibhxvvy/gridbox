@@ -30,6 +30,35 @@
 .sliders { display: flex; flex-direction: column; gap: 11px; }
 .colorStack { display: flex; flex-direction: column; gap: 8px; }
 
+/* Animation direction grid */
+.animGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.animBtn {
+  font-family: var(--gb-font-mono);
+  font-size: 13px;
+  aspect-ratio: 1;
+  border: 1px solid var(--gb-border);
+  border-radius: 4px;
+  background: var(--gb-s2);
+  color: var(--gb-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.12s, color 0.12s, background 0.12s;
+  padding: 0;
+}
+.animBtn:hover { border-color: var(--gb-muted2); color: var(--gb-text); }
+.animBtnActive {
+  border-color: var(--gb-accent) !important;
+  color: var(--gb-accent) !important;
+  background: rgba(200,255,0,0.08) !important;
+}
+
 .resetBtn {
   width: 100%;
   margin-top: 8px;

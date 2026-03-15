@@ -1,4 +1,3 @@
-/* Desktop: fixed 830x467, centered */
 .area {
   flex-shrink: 0;
   display: flex;
@@ -12,12 +11,35 @@
 .box {
   position: relative;
   box-shadow: 0 0 0 1px var(--gb-border), 0 8px 32px rgba(0,0,0,0.8);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.animBox {
+  /* lime green border when animation active */
+  box-shadow: 0 0 0 2px var(--gb-accent), 0 8px 32px rgba(0,0,0,0.8);
 }
 
 .canvas {
   display: block;
   width: 830px;
   height: 467px;
+}
+
+.canvasHidden {
+  /* Canvas still rendered for export but hidden behind overlay */
+  visibility: hidden;
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+}
+
+/* Animation overlay — same size as canvas, CSS animated */
+.animOverlay {
+  width: 830px;
+  height: 467px;
+  display: block;
+  background-repeat: repeat;
 }
 
 .badge {
@@ -31,23 +53,68 @@
   pointer-events: none; letter-spacing: 0.05em;
 }
 
-/* Mobile: full width 16:9 — no padding, edge to edge */
+/* ── SEAMLESS ANIMATION KEYFRAMES ──────────────────────────────
+   Each direction moves exactly one tile-size, then loops.
+   We use CSS custom properties from inline style for tile size.
+   Since keyframes can't use inline vars, we use fixed steps
+   and rely on background-size being set by the bgSize CSS.
+   The trick: move by the exact bgSize amount per loop.
+   We use a large fixed value (200px) and the actual visual
+   seamlessness comes from the repeat pattern tiling.
+─────────────────────────────────────────────────────────────── */
+@keyframes gm-left {
+  from { background-position: 0 0; }
+  to   { background-position: -200px 0; }
+}
+@keyframes gm-right {
+  from { background-position: 0 0; }
+  to   { background-position: 200px 0; }
+}
+@keyframes gm-up {
+  from { background-position: 0 0; }
+  to   { background-position: 0 -200px; }
+}
+@keyframes gm-down {
+  from { background-position: 0 0; }
+  to   { background-position: 0 200px; }
+}
+@keyframes gm-diag-left {
+  from { background-position: 0 0; }
+  to   { background-position: -200px -200px; }
+}
+@keyframes gm-diag-right {
+  from { background-position: 0 0; }
+  to   { background-position: 200px -200px; }
+}
+
+/* Mobile */
 @media (max-width: 768px) {
   .area {
     padding: 0;
     background: #000;
     width: 100%;
     flex-shrink: 0;
+    /* lime green border always on mobile */
+    border: 2px solid var(--gb-accent);
+    border-left: none; border-right: none;
+    box-sizing: border-box;
   }
   .box {
     width: 100%;
     box-shadow: none;
-    border-bottom: 1px solid var(--gb-border);
+    border: none;
+    aspect-ratio: 16/9;
   }
+  .animBox { box-shadow: none; }
   .canvas {
     width: 100%;
     height: auto;
     aspect-ratio: 16/9;
-    display: block;
+  }
+  .animOverlay {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0; left: 0;
   }
 }

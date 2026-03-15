@@ -1,3 +1,5 @@
+export type AnimationDir = 'none' | 'left' | 'right' | 'up' | 'down' | 'diag-left' | 'diag-right';
+
 export interface PatternState {
   pattern:   string;
   bgColor:   string;
@@ -6,12 +8,12 @@ export interface PatternState {
   opacity:   number;
   thickness: number;
   rotation:  number;
+  animation: AnimationDir;
 }
 
 export interface Pattern {
   id:   string;
   name: string;
-  /** extMult: 5 for full preview, 2 for thumbnails (less work = no lag) */
   draw: (ctx: CanvasRenderingContext2D, s: PatternState, extMult?: number) => void;
   css:  (s: PatternState) => string;
 }

@@ -128,20 +128,20 @@
   color: var(--gb-muted);
 }
 
-/* CTA Grid */
+/* CTA Stack — all equal width, single column */
 .ctaGrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  flex-direction: column;
   gap: 10px;
   width: 100%;
-  max-width: 440px;
+  max-width: 360px;
 }
 
 .ctaOutline {
   font-family: var(--gb-font-mono);
   font-size: 14px;
   letter-spacing: 0.06em;
-  padding: 12px 20px;
+  padding: 14px 20px;
   border: 1px solid var(--gb-border);
   border-radius: 5px;
   color: var(--gb-muted2);
@@ -149,6 +149,7 @@
   text-align: center;
   transition: border-color 0.14s, color 0.14s, background 0.14s;
   background: transparent;
+  width: 100%;
 }
 .ctaOutline:hover {
   border-color: var(--gb-accent);
@@ -161,7 +162,7 @@
   font-size: 14px;
   letter-spacing: 0.06em;
   font-weight: 700;
-  padding: 13px 20px;
+  padding: 14px 20px;
   border: 1px solid var(--gb-accent);
   border-radius: 5px;
   color: #000;
@@ -169,6 +170,7 @@
   text-decoration: none;
   text-align: center;
   transition: background 0.14s, color 0.14s;
+  width: 100%;
 }
 .ctaFilled:hover {
   background: #fff;

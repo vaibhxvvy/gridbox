@@ -3,24 +3,24 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { PatternState } from '@/types/pattern';
 import { PATTERNS, drawPattern } from '@/lib/patterns/engine';
-import { DEFAULT_STATE } from '@/lib/url-state';
+import { DEFAULT_STATE, encodeState } from '@/lib/url-state';
 
 const THUMB_SIZE = 58;
 
 // Per-pattern default adjustments — reset when switching patterns
 const PATTERN_DEFAULTS: Partial<Record<string, Partial<PatternState>>> = {
-  noise:    { size: 20, opacity: 20, thickness: 1, rotation: 0 },
-  dots:     { size: 18, opacity: 25, thickness: 2, rotation: 0 },
-  grid:     { size: 24, opacity: 25, thickness: 1, rotation: 0 },
-  rect:     { size: 24, opacity: 25, thickness: 1, rotation: 0 },
-  diagonal: { size: 14, opacity: 20, thickness: 1, rotation: 0 },
-  hatch:    { size: 16, opacity: 20, thickness: 1, rotation: 0 },
-  carbon:   { size: 8,  opacity: 80, thickness: 1, rotation: 0 },
-  halftone: { size: 16, opacity: 60, thickness: 4, rotation: 0 },
-  plus:     { size: 20, opacity: 30, thickness: 1, rotation: 0 },
-  hex:      { size: 22, opacity: 35, thickness: 1, rotation: 0 },
-  waves:    { size: 20, opacity: 35, thickness: 1, rotation: 0 },
-  circuit:  { size: 24, opacity: 50, thickness: 1, rotation: 0 },
+  noise:    { size: 20, opacity: 20, thickness: 1, rotation: 0, animation: 'none' },
+  dots:     { size: 18, opacity: 25, thickness: 2, rotation: 0, animation: 'none' },
+  grid:     { size: 24, opacity: 25, thickness: 1, rotation: 0, animation: 'none' },
+  rect:     { size: 24, opacity: 25, thickness: 1, rotation: 0, animation: 'none' },
+  diagonal: { size: 14, opacity: 20, thickness: 1, rotation: 0, animation: 'none' },
+  hatch:    { size: 16, opacity: 20, thickness: 1, rotation: 0, animation: 'none' },
+  carbon:   { size: 8,  opacity: 80, thickness: 1, rotation: 0, animation: 'none' },
+  halftone: { size: 16, opacity: 60, thickness: 4, rotation: 0, animation: 'none' },
+  plus:     { size: 20, opacity: 30, thickness: 1, rotation: 0, animation: 'none' },
+  hex:      { size: 22, opacity: 35, thickness: 1, rotation: 0, animation: 'none' },
+  waves:    { size: 20, opacity: 35, thickness: 1, rotation: 0, animation: 'none' },
+  circuit:  { size: 24, opacity: 50, thickness: 1, rotation: 0, animation: 'none' },
 };
 
 interface UsePatternRendererReturn {
@@ -111,16 +111,7 @@ export function usePatternRenderer(): UsePatternRendererReturn {
       scheduleThumbUpdate(thumbActiveOnly.current);
       thumbActiveOnly.current = true;
       if (typeof window !== 'undefined') {
-        const p = new URLSearchParams({
-          pat: s.pattern,
-          bg:  s.bgColor.replace('#', ''),
-          col: s.patColor.replace('#', ''),
-          sz:  String(s.size),
-          op:  String(s.opacity),
-          tk:  String(s.thickness),
-          rot: String(s.rotation),
-        });
-        history.replaceState(null, '', '?' + p.toString());
+        history.replaceState(null, '', encodeState(s));
       }
     });
   }, [drawPreview, scheduleThumbUpdate]);
