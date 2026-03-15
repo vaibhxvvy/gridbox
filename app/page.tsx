@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useGithubStars } from '@/lib/use-github-stars';
 import styles from './page.module.css';
 
 // ── contrast helper ──────────────────────────────────────────────────
@@ -82,18 +83,19 @@ export default function LandingPage() {
 
   const tc  = activeBg ? contrastColor(activeBg.bg) : '#ffffff';
   const isActive = activeBg !== null;
+  const stars = useGithubStars('vaibhxvvy/gridbox');
 
   return (
     <div className={styles.page} style={pageBg}>
 
-      {/* NAV */}
+      {/* NAV — on mobile: logo top row, links second row */}
       <nav className={styles.nav}>
         <span className={styles.navLogo} style={{ color: tc }}>gridmint</span>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-          <Link href="/install" style={{ fontFamily: 'var(--gb-font-mono)', fontSize: '11px', color: 'var(--gb-muted2)', textDecoration: 'none', letterSpacing: '0.08em' }}>
+        <div className={styles.navLinks}>
+          <Link href="/install" className={styles.navLink} style={isActive ? { color: tc } : {}}>
             install
           </Link>
-          <Link href="/generate" style={{ fontFamily: 'var(--gb-font-mono)', fontSize: '11px', color: 'var(--gb-muted2)', textDecoration: 'none', letterSpacing: '0.08em' }}>
+          <Link href="/generate" className={styles.navLink} style={isActive ? { color: tc } : {}}>
             generator
           </Link>
           <a
@@ -103,7 +105,7 @@ export default function LandingPage() {
             rel="noopener noreferrer"
             style={isActive ? { borderColor: withAlpha(tc, 0.5), color: tc } : {}}
           >
-            ★ stars on github
+            ★ {stars}
           </a>
         </div>
       </nav>

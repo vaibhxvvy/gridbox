@@ -353,8 +353,20 @@ export const PATTERNS: Pattern[] = [
         }
       ctx.restore();
     },
-    css({ bgColor }) {
-      return `/* Circuit is canvas-rendered — export as PNG for best fidelity */\nbackground-color: ${bgColor};`;
+    css({ bgColor, patColor, opacity, size, thickness }) {
+      const [r,g,b] = hexToRgb(patColor);
+      const a = (opacity/100).toFixed(2);
+      const s = size;
+      // SVG inline that mimics circuit lines + dots
+      const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='${s*4}' height='${s*4}'>`
+        + `<line x1='${s*0.5}' y1='${s*0.5}' x2='${s*0.5}' y2='${s*1.5}' stroke='rgba(${r},${g},${b},${a})' stroke-width='${thickness}'/>`
+        + `<line x1='${s*0.5}' y1='${s*0.5}' x2='${s*1.5}' y2='${s*0.5}' stroke='rgba(${r},${g},${b},${a})' stroke-width='${thickness}'/>`
+        + `<line x1='${s*2.5}' y1='${s*0.5}' x2='${s*2.5}' y2='${s*2.5}' stroke='rgba(${r},${g},${b},${a})' stroke-width='${thickness}'/>`
+        + `<line x1='${s*0.5}' y1='${s*2.5}' x2='${s*2.0}' y2='${s*2.5}' stroke='rgba(${r},${g},${b},${a})' stroke-width='${thickness}'/>`
+        + `<circle cx='${s*0.5}' cy='${s*0.5}' r='${thickness+0.5}' fill='rgba(${r},${g},${b},${a})'/>`
+        + `<circle cx='${s*2.5}' cy='${s*2.5}' r='${thickness+0.5}' fill='rgba(${r},${g},${b},${a})'/>`
+        + `</svg>`;
+      return `background-color: ${bgColor};\nbackground-image: url("data:image/svg+xml,${encodeURIComponent(svg)}");\nbackground-size: ${s*4}px ${s*4}px;\n/* Note: use Export PNG for highest fidelity */`;
     },
   },
 ];

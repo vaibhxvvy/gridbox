@@ -9,25 +9,26 @@
   background: var(--gb-surface);
 }
 
-/* Mobile: sidebar becomes compact scrollable panel below canvas */
-@media (max-width: 640px) {
+/* Mobile: sidebar becomes scrollable panel below canvas+code */
+@media (max-width: 768px) {
   .sidebar {
     width: 100%;
-    flex-direction: row;
-    overflow-x: auto;
-    overflow-y: hidden;
+    flex: 1;
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
     border-right: none;
     border-top: 1px solid var(--gb-border);
-    height: 200px;
-    flex-shrink: 0;
+    height: auto;
+    min-height: 0;
   }
   .section {
-    min-width: 180px;
-    border-bottom: none;
-    border-right: 1px solid var(--gb-border);
+    min-width: unset;
+    border-bottom: 1px solid var(--gb-border);
+    border-right: none;
     flex-shrink: 0;
   }
-  .section:last-child { border-right: none; }
+  .installBanner { display: none; } /* hide on mobile to save space */
 }
 
 .section {
@@ -77,3 +78,19 @@
   border-color: #ff5555;
   color: #ff5555;
 }
+
+.installBanner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: rgba(200,255,0,0.05);
+  border-bottom: 1px solid var(--gb-border);
+  text-decoration: none;
+  transition: background 0.14s;
+  flex-shrink: 0;
+}
+.installBanner:hover { background: rgba(200,255,0,0.1); }
+.installDot { width:6px; height:6px; border-radius:50%; background:var(--gb-accent); flex-shrink:0; }
+.installCmd { font-family:var(--gb-font-mono); font-size:10px; color:var(--gb-accent); flex:1; letter-spacing:0.04em; }
+.installArrow { font-size:11px; color:var(--gb-accent); opacity:0.6; }

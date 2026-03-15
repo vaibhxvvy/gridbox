@@ -15,8 +15,10 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 20px 32px;
+  padding: 18px 32px;
   border-bottom: 1px solid var(--gb-border);
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 .navLogo {
@@ -26,6 +28,22 @@
   color: var(--gb-text);
   letter-spacing: 0.05em;
 }
+
+.navLinks {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.navLink {
+  font-family: var(--gb-font-mono);
+  font-size: 11px;
+  color: var(--gb-muted2);
+  text-decoration: none;
+  letter-spacing: 0.08em;
+  transition: color 0.14s;
+}
+.navLink:hover { color: var(--gb-accent); }
 
 .navGithub {
   font-family: var(--gb-font-mono);
@@ -239,9 +257,28 @@
 
 /* ── RESPONSIVE ── */
 @media (max-width: 600px) {
-  .nav { padding: 16px 20px; }
-  .hero { padding: 60px 20px 40px; }
-  .ctaGrid { grid-template-columns: 1fr; max-width: 320px; }
-  .previewStrip { display: grid; grid-template-columns: repeat(3, 1fr); }
+  /* Nav: logo on top row, links on second row */
+  .nav {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 14px 20px;
+    gap: 10px;
+  }
+  .navLogo { font-size: 20px; }
+  .navLinks {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .navLink { font-size: 10px; }
+  .navGithub { padding: 5px 12px; font-size: 10px; }
+
+  .hero { padding: 40px 20px 30px; gap: 20px; }
+  .headline { font-size: clamp(26px, 8vw, 40px); }
+  .sub { font-size: 14px; }
+  .ctaGrid { grid-template-columns: 1fr 1fr; max-width: 100%; }
+
+  /* Preview strip — 2 cols on mobile */
+  .previewStrip { display: grid; grid-template-columns: repeat(2, 1fr); }
   .previewCell { border-right: none; border-bottom: 1px solid var(--gb-border); }
+  .previewSwatch { height: 70px; }
 }

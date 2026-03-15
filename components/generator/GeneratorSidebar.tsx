@@ -1,6 +1,7 @@
 'use client';
 
 import type { PatternState } from '@/types/pattern';
+import Link from 'next/link';
 import { PatternGrid } from './PatternGrid';
 import { Slider }      from './Slider';
 import { ColorPicker } from './ColorPicker';
@@ -18,6 +19,13 @@ export function GeneratorSidebar({ state, thumbRefs, onChange, onReset }: Props)
   return (
     <aside className={styles.sidebar}>
 
+      {/* Install banner */}
+      <Link href="/install" className={styles.installBanner}>
+        <span className={styles.installDot} />
+        <code className={styles.installCmd}>npm install gridmint</code>
+        <span className={styles.installArrow}>→</span>
+      </Link>
+
       {/* Patterns */}
       <section className={styles.section}>
         <h3 className={styles.sectionTitle}>patterns</h3>
@@ -34,7 +42,7 @@ export function GeneratorSidebar({ state, thumbRefs, onChange, onReset }: Props)
         <div className={styles.sliders}>
           <Slider label="size"      value={state.size}      min={4}  max={state.pattern === 'rect' ? 240 : 80}  unit="px" onChange={v => onChange({ size: v })} />
           <Slider label="opacity"   value={state.opacity}   min={1}  max={100} unit="%"  onChange={v => onChange({ opacity: v })} />
-          <Slider label="thickness" value={state.thickness} min={1}  max={8}   unit="px" onChange={v => onChange({ thickness: v })} />
+          <Slider label="thickness" value={state.thickness} min={1}  max={20}  unit="px" onChange={v => onChange({ thickness: v })} />
           <Slider label="rotation"  value={state.rotation}  min={0}  max={180} unit="°"  onChange={v => onChange({ rotation: v })} />
         </div>
       </section>

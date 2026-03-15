@@ -2,12 +2,10 @@
   display: flex;
   flex-direction: column;
   border: 1px solid var(--gb-border);
-  border-radius: var(--gb-radius-md);
-  overflow: hidden;
+  border-top: none;
   background: var(--gb-bg);
 }
 
-/* Tab row — all tabs always visible, no wrapping */
 .tabs {
   display: flex;
   align-items: center;
@@ -36,26 +34,32 @@
 .tab:hover  { color: var(--gb-text); background: var(--gb-s3); }
 .tab.active { color: var(--gb-accent); background: var(--gb-s3); }
 
-.copyBtn {
+/* copy + export grouped at right */
+.actions {
   margin-left: auto;
+  display: flex;
+  align-items: stretch;
+  flex-shrink: 0;
+  border-left: 1px solid var(--gb-border);
+}
+
+.copyBtn {
   font-family: var(--gb-font-mono);
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.08em;
   padding: 9px 16px;
   border: none;
-  border-left: 1px solid var(--gb-border);
+  border-right: 1px solid var(--gb-border);
   background: var(--gb-accent);
   color: #000;
   cursor: pointer;
   white-space: nowrap;
-  flex-shrink: 0;
-  transition: background 0.12s, color 0.12s;
+  transition: background 0.12s;
 }
 .copyBtn:hover  { background: #fff; }
 .copyBtn.copied { background: #00cc66; color: #000; }
 
-/* Code block — scrolls vertically, never expands the layout */
 .code {
   padding: 12px 14px;
   font-family: var(--gb-font-mono);
@@ -65,8 +69,7 @@
   white-space: pre;
   overflow-x: auto;
   overflow-y: auto;
-  /* fixed height so it never pushes canvas up */
-  height: 90px;
+  height: 88px;
   margin: 0;
 }
 .code::-webkit-scrollbar { width: 3px; height: 3px; }

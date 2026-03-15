@@ -152,70 +152,38 @@
 .copyBtn:hover  { background: #fff; }
 .copyBtn.copied { background: #00cc66; color: #000; }
 
-/* ── DESKTOP — right col scrolls if needed ── */
-.rightCol {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  overflow-y: auto;
-  overflow-x: hidden;
-  min-width: 0;
-}
-
 /* ── RESPONSIVE — TABLET ── */
 @media (max-width: 900px) {
   .tbBtn { padding: 7px 10px; font-size: 10px; }
-  .cssStrip { display: none; }
 }
 
-/* ── RESPONSIVE — MOBILE (matches sketch) ──
-   Layout: topbar fixed → preview fixed → code tabs+copy →
-           scrollable panel with all controls below
-*/
+/* ── RESPONSIVE — MOBILE — strict sketch:
+   topbar → 16:9 preview → code tabs+copy+export → scrollable controls
+── */
 @media (max-width: 768px) {
-  .page {
-    height: 100dvh;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  }
+  .page { height: 100dvh; overflow: hidden; display: flex; flex-direction: column; }
 
-  /* Topbar stays fixed at top */
-  .topbar {
-    flex-shrink: 0;
-    padding: 0 12px;
-    height: 42px;
-  }
-  .topbarLogo { font-size: 13px; }
-  .tbBtn      { padding: 5px 9px; font-size: 10px; }
-  .tbGithub   { display: none; }
-  .tbRandom   { display: none; }
+  .topbar    { height: 42px; flex-shrink: 0; padding: 0 12px; }
+  .topbarLogo { font-size: 14px; }
+  .tbBtn     { padding: 5px 8px; font-size: 9px; }
+  .tbGithub  { display: none; }
+  .tbRandom  { display: none; }
 
-  /* Shell stacks vertically */
   .shell {
     flex: 1;
     flex-direction: column;
     overflow: hidden;
     min-height: 0;
+    display: flex;
   }
 
-  /* Right col: preview + code fixed on top, action bar fixed, sidebar scrolls */
+  /* rightCol: preview + code, fixed/shrink */
   .rightCol {
-    flex: 1;
+    flex-shrink: 0;
+    overflow: visible;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
-    min-height: 0;
   }
 
-  /* Code panel compact */
-  .codePanel { padding: 6px 10px 0; }
-
-  /* Action bar compact */
-  .actionBar { height: auto; padding: 8px 10px; gap: 8px; }
-  .copyBtn   { padding: 7px 12px; font-size: 10px; }
-  .cssStrip  { display: none; }
-
-  /* Sidebar below everything — scrollable */
-  /* GeneratorSidebar.module.css handles the rest */
+  .codePanel { padding: 0; flex-shrink: 0; }
 }

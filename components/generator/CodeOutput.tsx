@@ -3,6 +3,7 @@
 import { useState, useCallback } from 'react';
 import { generateCode, type OutputFormat } from '@/lib/codegen';
 import type { PatternState } from '@/types/pattern';
+import { ExportMenu } from './ExportMenu';
 import styles from './CodeOutput.module.css';
 
 const FORMATS: { id: OutputFormat; label: string }[] = [
@@ -20,7 +21,7 @@ interface Props {
 
 export function CodeOutput({ state }: Props) {
   const [format, setFormat] = useState<OutputFormat>('css');
-  const [copied, setCopied]  = useState(false);
+  const [copied, setCopied] = useState(false);
 
   const code = generateCode(state, format);
 
@@ -33,7 +34,7 @@ export function CodeOutput({ state }: Props) {
 
   return (
     <div className={styles.wrap}>
-      {/* Tab row */}
+      {/* Tab row + copy + export */}
       <div className={styles.tabs}>
         {FORMATS.map(f => (
           <button
@@ -44,15 +45,18 @@ export function CodeOutput({ state }: Props) {
             {f.label}
           </button>
         ))}
-        <button
-          className={`${styles.copyBtn} ${copied ? styles.copied : ''}`}
-          onClick={copy}
-        >
-          {copied ? '✓ copied' : 'copy'}
-        </button>
+        <div className={styles.actions}>
+          <button
+            className={`${styles.copyBtn} ${copied ? styles.copied : ''}`}
+            onClick={copy}
+          >
+            {copied ? '✓ copied' : 'copy'}
+          </button>
+          <ExportMenu state={state} />
+        </div>
       </div>
 
-      {/* Code */}
+      {/* Code — scrollable, fixed height */}
       <pre className={styles.code}><code>{code}</code></pre>
     </div>
   );

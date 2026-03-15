@@ -1,24 +1,24 @@
-import { Analytics } from "@vercel/analytics/next"
 import type { Metadata, Viewport } from 'next';
+import { Analytics } from '@vercel/analytics/react';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Gridbox — CSS Background Pattern Generator',
+  title: 'Gridmint — CSS Background Pattern Generator',
   description:
     'Generate beautiful CSS background patterns instantly. Copy CSS, SCSS, Tailwind, React, Next.js or TSX. Zero dependencies.',
   keywords: ['css background', 'pattern generator', 'background texture', 'gridmint', 'css patterns'],
   metadataBase: new URL('https://gridmint.ink'),
   openGraph: {
-    title: 'Gridbox — CSS Background Pattern Generator',
+    title: 'Gridmint — CSS Background Pattern Generator',
     description: 'Pick a pattern. Tweak it. Copy the code in any format.',
     url: 'https://gridmint.ink',
-    siteName: 'Gridbox',
+    siteName: 'Gridmint',
     images: [{ url: '/og.png', width: 1200, height: 630 }],
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Gridbox — CSS Background Pattern Generator',
+    title: 'Gridmint — CSS Background Pattern Generator',
     description: 'Pick a pattern. Tweak it. Copy the code in any format.',
     images: ['/og.png'],
   },
@@ -26,6 +26,8 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: '#0a0a0a',
+  width: 'device-width',
+  initialScale: 1,
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -41,10 +43,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link
           rel="icon"
           type="image/svg+xml"
-          href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' fill='%230a0a0a'/><text x='50%25' y='56%25' font-family='monospace' font-size='24' font-weight='bold' fill='%23c8ff00' text-anchor='middle' dominant-baseline='middle'>gb</text></svg>"
+          href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' fill='%230a0a0a'/><text x='50%25' y='56%25' font-family='monospace' font-size='22' font-weight='bold' fill='%23c8ff00' text-anchor='middle' dominant-baseline='middle'>gm</text></svg>"
         />
       </head>
-      <body>{children}</body>
+      <body>
+        {children}
+        <Analytics />
+      </body>
     </html>
   );
 }

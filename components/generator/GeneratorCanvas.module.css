@@ -1,3 +1,4 @@
+/* Desktop: fixed 830x467, centered */
 .area {
   flex-shrink: 0;
   display: flex;
@@ -11,10 +12,8 @@
 .box {
   position: relative;
   box-shadow: 0 0 0 1px var(--gb-border), 0 8px 32px rgba(0,0,0,0.8);
-  flex-shrink: 0;
 }
 
-/* Canvas is always exactly 830×467 on desktop */
 .canvas {
   display: block;
   width: 830px;
@@ -23,25 +22,32 @@
 
 .badge {
   position: absolute;
-  bottom: 8px;
-  right: 8px;
+  bottom: 8px; right: 8px;
   font-family: var(--gb-font-mono);
-  font-size: 8px;
-  color: var(--gb-muted);
+  font-size: 8px; color: var(--gb-muted);
   background: rgba(0,0,0,0.75);
   border: 1px solid var(--gb-border);
-  padding: 2px 8px;
-  border-radius: 3px;
-  pointer-events: none;
-  letter-spacing: 0.05em;
+  padding: 2px 8px; border-radius: 3px;
+  pointer-events: none; letter-spacing: 0.05em;
 }
 
-/* Mobile — scale canvas down to fit screen */
-@media (max-width: 900px) {
+/* Mobile: full width 16:9 — no padding, edge to edge */
+@media (max-width: 768px) {
+  .area {
+    padding: 0;
+    background: #000;
+    width: 100%;
+    flex-shrink: 0;
+  }
+  .box {
+    width: 100%;
+    box-shadow: none;
+    border-bottom: 1px solid var(--gb-border);
+  }
   .canvas {
     width: 100%;
     height: auto;
-    max-width: 830px;
+    aspect-ratio: 16/9;
+    display: block;
   }
-  .area { padding: 10px; }
 }

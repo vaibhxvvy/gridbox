@@ -3,20 +3,20 @@
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePatternRenderer }           from '@/lib/use-pattern-renderer';
-import { getCSS, PATTERNS }             from '@/lib/patterns/engine';
+import { PATTERNS }                     from '@/lib/patterns/engine';
 import { decodeState }                  from '@/lib/url-state';
+import { useGithubStars }               from '@/lib/use-github-stars';
 import { GeneratorSidebar }             from '@/components/generator/GeneratorSidebar';
 import { GeneratorCanvas }              from '@/components/generator/GeneratorCanvas';
 import { CodeOutput }                   from '@/components/generator/CodeOutput';
-import { ExportMenu }                   from '@/components/generator/ExportMenu';
 import { Toast }                        from '@/components/ui/Toast';
 import styles from './GeneratorApp.module.css';
 
 export default function GeneratorApp() {
   const { state, setState, canvasRef, thumbRefs, resetState, redraw } = usePatternRenderer();
-  const [badge,     setBadge]    = useState('');
-  const [toast,     setToast]    = useState({ visible: false, msg: '' });
-  const [copiedCSS, setCopied]   = useState(false);
+  const [badge,  setBadge]  = useState('');
+  const [toast,  setToast]  = useState({ visible: false, msg: '' });
+  const stars = useGithubStars('vaibhxvvy/gridbox');
 
   // Load URL state on mount
   useEffect(() => {
@@ -43,13 +43,6 @@ export default function GeneratorApp() {
       .then(() => showToast('link copied to clipboard'));
   }, [showToast]);
 
-  const handleCopyCSS = useCallback(() => {
-    navigator.clipboard.writeText(getCSS(state)).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1400);
-    });
-  }, [state]);
-
   const handleRandomize = useCallback(() => {
     const randomHex = () => '#' + Math.floor(Math.random() * 0xffffff).toString(16).padStart(6, '0');
     // pick dark bg (low brightness) and bright pattern color
@@ -74,7 +67,6 @@ export default function GeneratorApp() {
   useEffect(() => {
     const fn = (e: KeyboardEvent) => {
       if ((e.target as HTMLElement).tagName === 'INPUT') return;
-      if (e.key === 'c' && !e.metaKey && !e.ctrlKey) handleCopyCSS();
       if (e.key === 's' && !e.metaKey && !e.ctrlKey) handleShare();
       if (e.key === 'r') resetState();
       if (e.key === 'x') handleRandomize();
@@ -89,7 +81,7 @@ export default function GeneratorApp() {
     };
     window.addEventListener('keydown', fn);
     return () => window.removeEventListener('keydown', fn);
-  }, [state, setState, resetState, handleCopyCSS, handleShare, handleRandomize]);
+  }, [state, setState, resetState, handleShare, handleRandomize]);
 
   return (
     <div className={styles.page}>
@@ -110,7 +102,7 @@ export default function GeneratorApp() {
             target="_blank"
             rel="noopener noreferrer"
           >
-            ★ github
+            ★ {stars}
           </a>
         </div>
       </header>
@@ -135,20 +127,6 @@ export default function GeneratorApp() {
 
           <div className={styles.codePanel}>
             <CodeOutput state={state} />
-          </div>
-
-          <div className={styles.actionBar}>
-            <div className={styles.cssStrip}>
-              {getCSS(state).replace(/\n/g, ' ').substring(0, 90)}
-              {getCSS(state).length > 90 ? '…' : ''}
-            </div>
-            <button
-              className={`${styles.copyBtn} ${copiedCSS ? styles.copied : ''}`}
-              onClick={handleCopyCSS}
-            >
-              {copiedCSS ? '✓ copied' : 'copy css'}
-            </button>
-            <ExportMenu state={state} />
           </div>
 
         </div>
