@@ -55,14 +55,22 @@ const PREVIEW_PATTERNS = [
   },
   {
     id: 'circuit', name: 'Circuit', bg: '#061010',
-    // Circuit uses a dot-grid approximation for the landing page preview
-    // (actual circuit needs canvas — this gives the right vibe)
-    bgImage: [
-      'radial-gradient(circle, rgba(0,221,170,0.5) 1px, transparent 1px)',
-      'linear-gradient(rgba(0,221,170,0.07) 1px, transparent 1px)',
-      'linear-gradient(90deg, rgba(0,221,170,0.07) 1px, transparent 1px)',
-    ].join(','),
-    bgSize: '24px 24px, 24px 24px, 24px 24px', bgPos: '12px 12px, 0 0, 0 0',
+    bgImage: `url("data:image/svg+xml,${encodeURIComponent(
+      `<svg xmlns='http://www.w3.org/2000/svg' width='96' height='96'>`
+      + `<line x1='0' y1='12' x2='36' y2='12' stroke='rgba(0,221,170,0.55)' stroke-width='1'/>`
+      + `<line x1='36' y1='12' x2='36' y2='60' stroke='rgba(0,221,170,0.55)' stroke-width='1'/>`
+      + `<line x1='36' y1='60' x2='72' y2='60' stroke='rgba(0,221,170,0.55)' stroke-width='1'/>`
+      + `<line x1='48' y1='12' x2='96' y2='12' stroke='rgba(0,221,170,0.55)' stroke-width='1'/>`
+      + `<line x1='72' y1='0' x2='72' y2='60' stroke='rgba(0,221,170,0.55)' stroke-width='1'/>`
+      + `<line x1='12' y1='24' x2='12' y2='84' stroke='rgba(0,221,170,0.55)' stroke-width='1'/>`
+      + `<line x1='12' y1='84' x2='60' y2='84' stroke='rgba(0,221,170,0.55)' stroke-width='1'/>`
+      + `<circle cx='36' cy='12' r='2.5' fill='rgba(0,221,170,0.8)'/>`
+      + `<circle cx='72' cy='60' r='2.5' fill='rgba(0,221,170,0.8)'/>`
+      + `<circle cx='12' cy='84' r='2.5' fill='rgba(0,221,170,0.8)'/>`
+      + `<circle cx='12' cy='24' r='1.5' fill='rgba(0,221,170,0.5)'/>`
+      + `</svg>`
+    )}")`,
+    bgSize: '96px 96px', bgPos: '',
   },
   {
     id: 'plus', name: 'Plus', bg: '#0a1a0a',
@@ -105,7 +113,7 @@ export default function LandingPage() {
             rel="noopener noreferrer"
             style={isActive ? { borderColor: withAlpha(tc, 0.5), color: tc } : {}}
           >
-            ★ {stars}
+            {stars} ★
           </a>
         </div>
       </nav>

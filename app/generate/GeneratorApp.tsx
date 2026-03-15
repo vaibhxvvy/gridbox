@@ -102,7 +102,7 @@ export default function GeneratorApp() {
             target="_blank"
             rel="noopener noreferrer"
           >
-            ★ {stars}
+            {stars} ★
           </a>
         </div>
       </header>

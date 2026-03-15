@@ -19,7 +19,6 @@
   display: flex;
   align-items: center;
   padding: 0 16px;
-  position: relative;
   flex-shrink: 0;
 }
 
@@ -58,28 +57,14 @@
   line-height: 1;
 }
 
-.tbShare {
-  background: rgba(200,255,0,0.10);
-  border: 1px solid var(--gb-accent);
-  color: var(--gb-accent);
-}
-.tbShare:hover { background: var(--gb-accent); color: #000; }
-
-.tbGithub {
-  background: var(--gb-s3);
-  border: 1px solid #444;
-  color: var(--gb-text);
-}
+.tbShare  { background: rgba(200,255,0,0.10); border: 1px solid var(--gb-accent); color: var(--gb-accent); }
+.tbShare:hover  { background: var(--gb-accent); color: #000; }
+.tbGithub { background: var(--gb-s3); border: 1px solid #444; color: var(--gb-text); }
 .tbGithub:hover { background: var(--gb-text); border-color: var(--gb-text); color: #000; }
-
-.tbRandom {
-  background: transparent;
-  border: 1px solid var(--gb-border);
-  color: var(--gb-muted2);
-}
+.tbRandom { background: transparent; border: 1px solid var(--gb-border); color: var(--gb-muted2); }
 .tbRandom:hover { border-color: var(--gb-muted2); color: var(--gb-text); }
 
-/* ── SHELL ── */
+/* ── SHELL (desktop: sidebar left, rightCol right) ── */
 .shell {
   flex: 1;
   display: flex;
@@ -98,92 +83,58 @@
   min-height: 0;
 }
 
-/* Code panel — sits between canvas and action bar */
+/* Code panel — no padding, edge to edge */
 .codePanel {
   flex-shrink: 0;
-  padding: 10px 14px 0;
-  background: var(--gb-bg);
-  border-top: 1px solid var(--gb-border);
 }
-
-/* ── ACTION BAR ── */
-.actionBar {
-  flex-shrink: 0;
-  height: var(--gb-actionbar-h);
-  background: var(--gb-s2);
-  border-top: 1px solid var(--gb-border);
-  padding: 0 14px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.cssStrip {
-  flex: 1;
-  min-width: 0;
-  font-family: var(--gb-font-mono);
-  font-size: 10px;
-  color: var(--gb-muted);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  background: var(--gb-bg);
-  border: 1px solid var(--gb-border);
-  padding: 7px 10px;
-  border-radius: 4px;
-}
-
-.copyBtn {
-  font-family: var(--gb-font-mono);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  padding: 8px 16px;
-  border-radius: 5px;
-  cursor: pointer;
-  border: none;
-  background: var(--gb-accent);
-  color: #000;
-  text-transform: uppercase;
-  transition: all 0.14s;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-.copyBtn:hover  { background: #fff; }
-.copyBtn.copied { background: #00cc66; color: #000; }
 
 /* ── RESPONSIVE — TABLET ── */
 @media (max-width: 900px) {
   .tbBtn { padding: 7px 10px; font-size: 10px; }
 }
 
-/* ── RESPONSIVE — MOBILE — strict sketch:
-   topbar → 16:9 preview → code tabs+copy+export → scrollable controls
-── */
-@media (max-width: 768px) {
-  .page { height: 100dvh; overflow: hidden; display: flex; flex-direction: column; }
+/* ══════════════════════════════════════════════
+   MOBILE LAYOUT — strictly matches sketch:
 
+   [  topbar  ]          ← fixed, full width
+   [  preview ]          ← 16:9, full width, border
+   [ lang tabs | copy ]  ← fixed row
+   [ export btn row   ]  ← fixed row
+   [  controls scroll ]  ← all adjust/colours/presets, vertical scroll
+══════════════════════════════════════════════ */
+@media (max-width: 768px) {
+
+  .page {
+    height: 100dvh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* 1. Topbar — fixed height */
   .topbar    { height: 42px; flex-shrink: 0; padding: 0 12px; }
   .topbarLogo { font-size: 14px; }
   .tbBtn     { padding: 5px 8px; font-size: 9px; }
   .tbGithub  { display: none; }
   .tbRandom  { display: none; }
 
+  /* Shell: column layout — rightCol on top, sidebar below */
   .shell {
     flex: 1;
-    flex-direction: column;
-    overflow: hidden;
     min-height: 0;
-    display: flex;
+    overflow: hidden;
+    flex-direction: column;
   }
 
-  /* rightCol: preview + code, fixed/shrink */
+  /* rightCol: preview + code panel — shrinks to fit content */
   .rightCol {
     flex-shrink: 0;
     overflow: visible;
+    min-height: 0;
     display: flex;
     flex-direction: column;
   }
 
-  .codePanel { padding: 0; flex-shrink: 0; }
+  /* Code panel: no extra spacing */
+  .codePanel { flex-shrink: 0; }
 }

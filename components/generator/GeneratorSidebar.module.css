@@ -1,3 +1,4 @@
+/* ── DESKTOP SIDEBAR ── */
 .sidebar {
   width: var(--gb-sidebar-w);
   flex-shrink: 0;
@@ -9,31 +10,10 @@
   background: var(--gb-surface);
 }
 
-/* Mobile: sidebar becomes scrollable panel below canvas+code */
-@media (max-width: 768px) {
-  .sidebar {
-    width: 100%;
-    flex: 1;
-    flex-direction: column;
-    overflow-y: auto;
-    overflow-x: hidden;
-    border-right: none;
-    border-top: 1px solid var(--gb-border);
-    height: auto;
-    min-height: 0;
-  }
-  .section {
-    min-width: unset;
-    border-bottom: 1px solid var(--gb-border);
-    border-right: none;
-    flex-shrink: 0;
-  }
-  .installBanner { display: none; } /* hide on mobile to save space */
-}
-
 .section {
   padding: 12px;
   border-bottom: 1px solid var(--gb-border);
+  flex-shrink: 0;
 }
 
 .sectionTitle {
@@ -47,17 +27,8 @@
   font-weight: 400;
 }
 
-.sliders {
-  display: flex;
-  flex-direction: column;
-  gap: 11px;
-}
-
-.colorStack {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
+.sliders { display: flex; flex-direction: column; gap: 11px; }
+.colorStack { display: flex; flex-direction: column; gap: 8px; }
 
 .resetBtn {
   width: 100%;
@@ -74,11 +45,9 @@
   text-transform: uppercase;
   transition: border-color 0.12s, color 0.12s;
 }
-.resetBtn:hover {
-  border-color: #ff5555;
-  color: #ff5555;
-}
+.resetBtn:hover { border-color: #ff5555; color: #ff5555; }
 
+/* Install banner */
 .installBanner {
   display: flex;
   align-items: center;
@@ -94,3 +63,23 @@
 .installDot { width:6px; height:6px; border-radius:50%; background:var(--gb-accent); flex-shrink:0; }
 .installCmd { font-family:var(--gb-font-mono); font-size:10px; color:var(--gb-accent); flex:1; letter-spacing:0.04em; }
 .installArrow { font-size:11px; color:var(--gb-accent); opacity:0.6; }
+
+/* ══════════════════════════════════════════
+   MOBILE — sidebar is the SCROLLABLE BOTTOM
+   section. flex:1 so it takes all remaining
+   space after topbar+preview+code.
+══════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 100%;
+    flex: 1;          /* fills remaining height */
+    flex-direction: column;
+    overflow-y: auto; /* vertical scroll — the key line */
+    overflow-x: hidden;
+    border-right: none;
+    border-top: 1px solid var(--gb-border);
+    min-height: 0;
+  }
+  .installBanner { display: none; }
+  .section { padding: 10px 14px; }
+}
