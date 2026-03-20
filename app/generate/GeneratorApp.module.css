@@ -1,5 +1,7 @@
 /* ══════════════════════════════
-   GENERATOR PAGE
+   GENERATOR — DESKTOP LAYOUT
+   sidebar(260px fixed) | rightCol(flex:1)
+   rightCol = canvas → infobar → codePanel(flex:1)
 ══════════════════════════════ */
 
 .page {
@@ -13,40 +15,38 @@
 
 /* ── TOPBAR ── */
 .topbar {
-  height: var(--gb-topbar-h);
+  height: 46px;
   background: var(--gb-s2);
   border-bottom: 1px solid var(--gb-border);
   display: flex;
   align-items: center;
   padding: 0 16px;
   flex-shrink: 0;
+  gap: 0;
 }
 
-/* logo */
 .topbarLogo {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 700;
   color: var(--gb-accent);
-  letter-spacing: 0.1em;
+  letter-spacing: 0.12em;
   text-decoration: none;
-  transition: opacity 0.14s;
   flex-shrink: 0;
 }
-.topbarLogo:hover { opacity: 0.75; }
 
 .topbarActions {
   margin-left: auto;
   display: flex;
-  gap: 8px;
+  gap: 6px;
   align-items: center;
 }
 
 .tbBtn {
   font-family: var(--gb-font-mono);
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.07em;
-  padding: 7px 14px;
+  letter-spacing: 0.06em;
+  padding: 7px 13px;
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.14s;
@@ -65,7 +65,7 @@
 .tbRandom { background: transparent; border: 1px solid var(--gb-border); color: var(--gb-muted2); }
 .tbRandom:hover { border-color: var(--gb-muted2); color: var(--gb-text); }
 
-/* ── SHELL (desktop: sidebar left, rightCol right) ── */
+/* ── SHELL ── */
 .shell {
   flex: 1;
   display: flex;
@@ -73,66 +73,37 @@
   min-height: 0;
 }
 
-/* ── RIGHT COL ── */
+/* ── RIGHT COL (desktop) ── */
 .rightCol {
   flex: 1;
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: hidden;
   min-width: 0;
   min-height: 0;
 }
 
-/* Info bar — compact, directly below canvas */
+/* Info bar — compact strip directly below canvas */
 .infoBar {
   flex-shrink: 0;
-  height: 32px;
+  height: 30px;
   background: var(--gb-s2);
-  border-top: 1px solid var(--gb-border);
   border-bottom: 1px solid var(--gb-border);
   padding: 0 14px;
   display: flex;
   align-items: center;
   gap: 8px;
-  font-family: var(--gb-font-mono);
   font-size: 10px;
   color: var(--gb-muted);
   overflow: hidden;
 }
-
-.infoPattern {
-  color: var(--gb-accent);
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  font-size: 10px;
-}
-
+.infoPattern { color: var(--gb-accent); font-weight: 700; font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; }
 .infoSep { color: var(--gb-border); }
+.infoSwatch { width: 13px; height: 13px; border-radius: 3px; border: 1px solid rgba(255,255,255,0.12); flex-shrink: 0; }
+.infoAnim { color: var(--gb-accent); font-size: 10px; }
+.infoRight { margin-left: auto; font-size: 10px; white-space: nowrap; }
 
-.infoSwatch {
-  width: 14px;
-  height: 14px;
-  border-radius: 3px;
-  border: 1px solid rgba(255,255,255,0.12);
-  flex-shrink: 0;
-}
-
-.infoAnim {
-  color: var(--gb-accent);
-  font-size: 10px;
-  letter-spacing: 0.06em;
-}
-
-.infoRight {
-  margin-left: auto;
-  color: var(--gb-muted);
-  font-size: 10px;
-  white-space: nowrap;
-}
-
-/* Code panel — flex:1 fills remaining space, code scrolls inside */
+/* Code panel — fills all remaining space */
 .codePanel {
   flex: 1;
   min-height: 0;
@@ -141,22 +112,30 @@
   overflow: hidden;
 }
 
-/* ── RESPONSIVE — TABLET ── */
-@media (max-width: 900px) {
-  .tbBtn { padding: 7px 10px; font-size: 10px; }
-}
+/* ══════════════════════════════════════════════════
+   MOBILE LAYOUT — matches sketch exactly:
 
-/* ══════════════════════════════════════════════
-   MOBILE LAYOUT — strictly matches sketch:
-
-   [  topbar  ]          ← fixed, full width
-   [  preview ]          ← 16:9, full width, border
-   [ lang tabs | copy ]  ← fixed row
-   [ export btn row   ]  ← fixed row
-   [  controls scroll ]  ← all adjust/colours/presets, vertical scroll
-══════════════════════════════════════════════ */
+   ┌─────────────────────────────────┐  ← fixed 46px
+   │  gridmint    random share  1★   │
+   ├─────────────────────────────────┤
+   │                                 │
+   │   16:9 canvas (lime border)     │  ← fixed, full width
+   │                                 │
+   ├───────────────────────────────┬─┤
+   │  CSS ▾              copy │exp │  ← fixed toolbar row
+   ├─────────────────────────────────┤
+   │  code block (fixed ~3 lines)    │  ← fixed
+   ├─────────────────────────────────┤  ← scroll starts here
+   │  ▸ npm install gridmint         │
+   │  PATTERNS                       │
+   │  [grid of 12 patterns]          │
+   │  ADJUST  sliders                │
+   │  ANIMATE  buttons               │
+   │  COLOURS  pickers               │
+   │  PRESETS  dropdown+swatches     │
+   └─────────────────────────────────┘
+══════════════════════════════════════════════════ */
 @media (max-width: 768px) {
-
   .page {
     height: 100dvh;
     overflow: hidden;
@@ -164,34 +143,44 @@
     flex-direction: column;
   }
 
-  /* 1. Topbar — fixed height */
-  .topbar    { height: 42px; flex-shrink: 0; padding: 0 12px; }
-  /* logo */
-.topbarLogo { font-size: 14px; }
-  .tbBtn     { padding: 5px 8px; font-size: 9px; }
-  .tbGithub  { display: none; }
-  .tbRandom  { display: none; }
+  /* Compact topbar */
+  .topbar  { height: 46px; padding: 0 12px; flex-shrink: 0; }
+  .topbarLogo { font-size: 15px; }
+  .tbBtn   { padding: 6px 10px; font-size: 10px; }
 
-  /* Shell: column layout — rightCol on top, sidebar below */
+  /* Shell: full column, fills viewport minus topbar */
   .shell {
     flex: 1;
     min-height: 0;
     overflow: hidden;
     flex-direction: column;
+    display: flex;
   }
 
-  /* rightCol: preview + code panel — shrinks to fit content */
+  /*
+   * On mobile the DOM order is: GeneratorSidebar then rightCol.
+   * We need rightCol on top and sidebar below.
+   * Use order property so we don't change HTML.
+   */
+  .shell > *:nth-child(1) { order: 2; } /* sidebar → bottom */
+  .shell > *:nth-child(2) { order: 1; } /* rightCol → top   */
+
+  /* rightCol: canvas + info bar + code — all fixed height, no scroll */
   .rightCol {
     flex-shrink: 0;
     overflow: visible;
-    min-height: 0;
     display: flex;
     flex-direction: column;
+    order: 1;
   }
 
-  /* Code panel: no extra spacing */
-  .codePanel { flex-shrink: 0; }
-
-  /* Info bar hidden on mobile */
+  /* Info bar hidden on mobile — info is in the code toolbar context */
   .infoBar { display: none; }
+
+  /* Code panel: fixed height, no flex:1 on mobile */
+  .codePanel {
+    flex-shrink: 0;
+    flex: none;
+    min-height: 0;
+  }
 }

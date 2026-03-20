@@ -99,7 +99,7 @@ export default function GeneratorApp() {
             target="_blank"
             rel="noopener noreferrer"
           >
-            star on github
+            {stars} ★
           </a>
         </div>
       </header>

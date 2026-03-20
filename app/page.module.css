@@ -265,28 +265,44 @@
   .nav {
     flex-direction: column;
     align-items: flex-start;
-    padding: 14px 20px;
-    gap: 10px;
+    padding: 16px 20px;
+    gap: 12px;
   }
-  .navLogo { font-size: 20px; }
+  .navLogo { font-size: 22px; }
   .navLinks {
     width: 100%;
     justify-content: space-between;
   }
-  .navLink { font-size: 10px; }
-  .navGithub { padding: 5px 12px; font-size: 10px; }
+  .navLink { font-size: 11px; }
+  .navGithub { padding: 6px 14px; font-size: 11px; }
 
-  .hero { padding: 40px 20px 30px; gap: 20px; }
-  .headline { font-size: clamp(26px, 8vw, 40px); }
-  .sub { font-size: 14px; }
+  .hero { padding: 40px 20px 30px; gap: 22px; }
+  .badge { font-size: 11px; padding: 8px 16px; }
+  .headline { font-size: clamp(28px, 9vw, 44px); }
+  .sub { font-size: 15px; }
   .ctaGrid {
     grid-template-columns: 1fr;
     max-width: 100%;
+    gap: 8px;
   }
-  .ctaOutline, .ctaFilled { width: 100%; }
+  .ctaOutline, .ctaFilled { width: 100%; padding: 16px 20px; font-size: 14px; }
 
-  /* Preview strip — 2 cols on mobile */
-  .previewStrip { display: grid; grid-template-columns: repeat(2, 1fr); }
-  .previewCell { border-right: none; border-bottom: 1px solid var(--gb-border); }
-  .previewSwatch { height: 70px; }
+  /* Preview strip — horizontal scroll on mobile (not grid) */
+  .previewStrip {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .previewCell {
+    flex: 0 0 160px;
+    min-width: 160px;
+    border-right: 1px solid var(--gb-border);
+    border-bottom: none;
+  }
+  .previewCell:last-child { border-right: none; }
+  .previewSwatch { height: 90px; }
+  .previewLabel { font-size: 10px; }
+
+  .footer { padding: 14px 20px; font-size: 11px; }
 }

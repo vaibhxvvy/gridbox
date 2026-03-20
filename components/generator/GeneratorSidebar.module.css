@@ -8,27 +8,31 @@
   overflow-y: auto;
   overflow-x: hidden;
   background: var(--gb-surface);
+  scrollbar-width: thin;
+  scrollbar-color: var(--gb-border) transparent;
 }
+.sidebar::-webkit-scrollbar { width: 3px; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--gb-border); }
 
 .section {
-  padding: 12px;
+  padding: 14px 12px;
   border-bottom: 1px solid var(--gb-border);
   flex-shrink: 0;
 }
 
 .sectionTitle {
   font-family: var(--gb-font-mono);
-  font-size: 10px;
-  letter-spacing: 0.2em;
-  color: var(--gb-muted2);
+  font-size: 9px;
+  letter-spacing: 0.22em;
+  color: var(--gb-muted);
   text-transform: uppercase;
   text-align: center;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
   font-weight: 400;
 }
 
-.sliders { display: flex; flex-direction: column; gap: 11px; }
-.colorStack { display: flex; flex-direction: column; gap: 8px; }
+.sliders   { display: flex; flex-direction: column; gap: 13px; }
+.colorStack { display: flex; flex-direction: column; gap: 10px; }
 
 /* Animation direction grid */
 .animGrid {
@@ -39,7 +43,7 @@
 
 .animBtn {
   font-family: var(--gb-font-mono);
-  font-size: 13px;
+  font-size: 14px;
   aspect-ratio: 1;
   border: 1px solid var(--gb-border);
   border-radius: 4px;
@@ -51,23 +55,19 @@
   justify-content: center;
   transition: border-color 0.12s, color 0.12s, background 0.12s;
   padding: 0;
+  min-height: 32px;
 }
-.animControls {
-  margin-top: 8px;
-}
-.animBtnActive {
-  border-color: var(--gb-accent) !important;
-  color: var(--gb-accent) !important;
-  background: rgba(200,255,0,0.08) !important;
-}
+.animBtn:hover        { border-color: var(--gb-muted2); color: var(--gb-text); }
+.animBtnActive        { border-color: var(--gb-accent) !important; color: var(--gb-accent) !important; background: rgba(200,255,0,0.08) !important; }
+.animControls         { margin-top: 10px; }
 
 .resetBtn {
   width: 100%;
-  margin-top: 8px;
+  margin-top: 10px;
   font-family: var(--gb-font-mono);
-  font-size: 9px;
+  font-size: 10px;
   letter-spacing: 0.08em;
-  padding: 7px 10px;
+  padding: 8px 10px;
   border-radius: 4px;
   cursor: pointer;
   border: 1px solid var(--gb-border);
@@ -83,34 +83,54 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 12px;
+  padding: 11px 12px;
   background: rgba(200,255,0,0.05);
   border-bottom: 1px solid var(--gb-border);
   text-decoration: none;
   transition: background 0.14s;
   flex-shrink: 0;
 }
-.installBanner:hover { background: rgba(200,255,0,0.1); }
-.installDot { width:6px; height:6px; border-radius:50%; background:var(--gb-accent); flex-shrink:0; }
-.installCmd { font-family:var(--gb-font-mono); font-size:10px; color:var(--gb-accent); flex:1; letter-spacing:0.04em; }
+.installBanner:hover { background: rgba(200,255,0,0.10); }
+.installDot  { width:6px; height:6px; border-radius:50%; background:var(--gb-accent); flex-shrink:0; animation: pulse 2s ease-in-out infinite; }
+.installCmd  { font-family:var(--gb-font-mono); font-size:10px; color:var(--gb-accent); flex:1; letter-spacing:0.03em; }
 .installArrow { font-size:11px; color:var(--gb-accent); opacity:0.6; }
 
+@keyframes pulse {
+  0%,100% { opacity:1; box-shadow: 0 0 4px var(--gb-accent); }
+  50%      { opacity:0.5; }
+}
+
 /* ══════════════════════════════════════════
-   MOBILE — sidebar is the SCROLLABLE BOTTOM
-   section. flex:1 so it takes all remaining
-   space after topbar+preview+code.
+   MOBILE — sidebar is the SCROLLABLE section
+   that lives BELOW canvas+code in the page.
+   It gets flex:1 and overflow-y:auto so it
+   fills remaining viewport and scrolls.
 ══════════════════════════════════════════ */
 @media (max-width: 768px) {
   .sidebar {
     width: 100%;
-    flex: 1;          /* fills remaining height */
-    flex-direction: column;
-    overflow-y: auto; /* vertical scroll — the key line */
-    overflow-x: hidden;
+    flex: 1;
+    min-height: 0;
     border-right: none;
     border-top: 1px solid var(--gb-border);
-    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    /* order is set via parent .shell > *:nth-child(1) { order: 2 } */
   }
-  .installBanner { display: none; }
-  .section { padding: 10px 14px; }
+
+  .installBanner {
+    /* Show on mobile — it's the first item in the scroll area */
+    display: flex;
+    padding: 14px 16px;
+  }
+  .installCmd { font-size: 12px; }
+
+  .section { padding: 14px 16px; }
+
+  .sectionTitle { font-size: 10px; margin-bottom: 14px; }
+
+  /* Bigger touch targets on mobile */
+  .animBtn { min-height: 40px; font-size: 16px; }
+
+  .resetBtn { padding: 12px; font-size: 11px; margin-top: 12px; }
 }

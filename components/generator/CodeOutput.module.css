@@ -1,12 +1,12 @@
+/* ── DESKTOP ── fills parent codePanel (flex:1) */
 .wrap {
   display: flex;
   flex-direction: column;
-  border-top: 1px solid var(--gb-border);
+  height: 100%;
   background: var(--gb-bg);
-  height: 100%; /* fill parent codePanel */
+  border-top: 1px solid var(--gb-border);
 }
 
-/* toolbar: tabs + copy + export in one row */
 .toolbar {
   display: flex;
   align-items: stretch;
@@ -15,7 +15,7 @@
   flex-shrink: 0;
 }
 
-/* Desktop: tabs visible, dropdown hidden */
+/* Desktop: show tabs */
 .tabs {
   display: flex;
   flex: 1;
@@ -27,7 +27,7 @@
 .tab {
   font-family: var(--gb-font-mono);
   font-size: 11px;
-  letter-spacing: 0.07em;
+  letter-spacing: 0.06em;
   padding: 10px 14px;
   border: none;
   border-right: 1px solid var(--gb-border);
@@ -41,10 +41,10 @@
 .tab:hover  { color: var(--gb-text); background: var(--gb-s3); }
 .tab.active { color: var(--gb-accent); background: var(--gb-s3); }
 
-/* Mobile: dropdown hidden on desktop */
+/* Mobile: hide tabs, show dropdown instead */
 .langSelect { display: none; }
 
-/* Copy + Export always grouped right */
+/* Copy + Export — always right side */
 .actions {
   display: flex;
   align-items: stretch;
@@ -56,7 +56,7 @@
   font-family: var(--gb-font-mono);
   font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.07em;
   padding: 10px 18px;
   border: none;
   border-right: 1px solid var(--gb-border);
@@ -69,10 +69,10 @@
 .copyBtn:hover  { background: #fff; }
 .copyBtn.copied { background: #00cc66; color: #000; }
 
-/* Code block — expands to fill remaining space in codePanel */
+/* Code block — fills remaining space on desktop */
 .code {
   flex: 1;
-  padding: 14px;
+  padding: 14px 16px;
   font-family: var(--gb-font-mono);
   font-size: 11px;
   line-height: 1.7;
@@ -81,32 +81,48 @@
   overflow-x: auto;
   overflow-y: auto;
   margin: 0;
-  min-height: 80px;
+  min-height: 60px;
 }
-.code::-webkit-scrollbar { width: 4px; height: 4px; }
+.code::-webkit-scrollbar { width: 3px; height: 3px; }
 .code::-webkit-scrollbar-thumb { background: var(--gb-border); border-radius: 2px; }
 
-/* ── MOBILE ── */
+/* ── MOBILE ── toolbar fixed, code compact */
 @media (max-width: 768px) {
+  .wrap {
+    flex-shrink: 0;
+    height: auto;
+  }
+
+  /* Hide tabs, show dropdown */
   .tabs { display: none; }
+
   .langSelect {
     display: flex;
     flex: 1;
     font-family: var(--gb-font-mono);
-    font-size: 11px;
+    font-size: 12px;
+    font-weight: 700;
     color: var(--gb-text);
     background: var(--gb-s3);
     border: none;
-    border-right: 1px solid var(--gb-border);
-    padding: 0 12px;
+    padding: 0 14px;
     cursor: pointer;
     appearance: none;
     -webkit-appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23999'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23c8ff00'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
-    background-position: right 12px center;
-    padding-right: 30px;
+    background-position: right 14px center;
+    padding-right: 36px;
+    border-right: 1px solid var(--gb-border);
   }
-  .copyBtn { padding: 10px 18px; font-size: 11px; }
-  .code { font-size: 10px; min-height: 60px; }
+
+  .copyBtn { padding: 12px 18px; font-size: 12px; }
+
+  /* Code block: compact fixed height on mobile */
+  .code {
+    flex: none;
+    height: 72px;
+    font-size: 10px;
+    padding: 10px 14px;
+  }
 }
