@@ -51,14 +51,23 @@
   color: var(--gb-muted2);
   text-decoration: none;
   border: 1px solid var(--gb-border);
-  padding: 7px 16px;
   border-radius: 4px;
-  transition: border-color 0.14s, color 0.14s;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  transition: border-color 0.14s;
+  gap: 0;
 }
-.navGithub:hover {
-  border-color: var(--gb-accent);
-  color: var(--gb-accent);
+.navGithub:hover { border-color: var(--gb-accent); }
+.navGithubStar {
+  background: var(--gb-accent);
+  color: #000;
+  padding: 6px 10px;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
 }
+.navGithub > span:last-child { padding: 6px 12px; }
 
 /* ── HERO ── */
 .hero {

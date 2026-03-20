@@ -1,56 +1,48 @@
-.wrap { display: flex; flex-direction: column; gap: 8px; }
-
-.select {
-  width: 100%;
-  font-family: var(--gb-font-mono);
-  font-size: 11px;
-  color: var(--gb-text);
-  background: var(--gb-s2);
-  border: 1px solid var(--gb-border);
-  border-radius: 5px;
-  padding: 9px 12px;
-  cursor: pointer;
-  appearance: none;
-  -webkit-appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23999'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 12px center;
-  padding-right: 32px;
-  transition: border-color 0.12s;
-  letter-spacing: 0.04em;
-}
-.select:hover { border-color: var(--gb-accent); }
-.select:focus { outline: none; border-color: var(--gb-accent); }
-.select option { background: #1a1a1a; color: var(--gb-text); }
-
-/* Swatch grid — visual preset picker */
-.swatches {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
+.list {
+  display: flex;
+  flex-direction: column;
   gap: 4px;
 }
 
-.swatch {
-  aspect-ratio: 1;
-  border-radius: 4px;
-  border: 1px solid var(--gb-border);
-  cursor: pointer;
+.row {
   display: flex;
   align-items: center;
-  justify-content: center;
-  transition: transform 0.1s, border-color 0.12s;
-  position: relative;
-  overflow: hidden;
+  gap: 8px;
+  background: var(--gb-s2);
+  border: 1px solid var(--gb-border);
+  border-radius: 5px;
+  padding: 5px 8px;
+  cursor: pointer;
+  transition: border-color 0.12s, background 0.12s;
+  text-align: left;
+  width: 100%;
 }
-.swatch:hover {
-  transform: scale(1.1);
-  border-color: rgba(255,255,255,0.4);
+.row:hover { border-color: var(--gb-accent); background: var(--gb-s3); }
+
+.thumb {
+  width: 36px;
+  height: 36px;
+  border-radius: 3px;
+  display: block;
+  flex-shrink: 0;
+  border: 1px solid rgba(255,255,255,0.08);
 }
 
-.swatchDot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
+.name {
+  font-family: var(--gb-font-mono);
+  font-size: 10px;
+  color: var(--gb-text);
+  flex: 1;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.patName {
+  font-family: var(--gb-font-mono);
+  font-size: 8px;
+  color: var(--gb-muted);
+  letter-spacing: 0.04em;
   flex-shrink: 0;
-  box-shadow: 0 0 4px currentColor;
 }

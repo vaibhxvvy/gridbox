@@ -4,8 +4,8 @@ import { useEffect, useRef } from 'react';
 import type { PatternState } from '@/types/pattern';
 import styles from './GeneratorCanvas.module.css';
 
-const CANVAS_W = 830;
-const CANVAS_H = 467;
+const CANVAS_W = 1280;
+const CANVAS_H = 720;
 
 interface Props {
   canvasRef:   React.RefObject<HTMLCanvasElement | null>;

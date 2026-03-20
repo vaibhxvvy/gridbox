@@ -113,7 +113,8 @@ export default function LandingPage() {
             rel="noopener noreferrer"
             style={isActive ? { borderColor: withAlpha(tc, 0.5), color: tc } : {}}
           >
-            {stars} ★
+            <span className={styles.navGithubStar}>★</span>
+            <span>{stars}</span>
           </a>
         </div>
       </nav>

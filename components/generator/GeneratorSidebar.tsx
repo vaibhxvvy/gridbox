@@ -8,14 +8,14 @@ import { ColorPicker } from './ColorPicker';
 import { Presets }     from './Presets';
 import styles from './GeneratorSidebar.module.css';
 
-const ANIM_DIRS: { id: AnimationDir; label: string; icon: string }[] = [
-  { id: 'none',       label: 'off',        icon: '○' },
-  { id: 'left',       label: '←',          icon: '←' },
-  { id: 'right',      label: '→',          icon: '→' },
-  { id: 'up',         label: '↑',          icon: '↑' },
-  { id: 'down',       label: '↓',          icon: '↓' },
-  { id: 'diag-left',  label: '↙',          icon: '↙' },
-  { id: 'diag-right', label: '↘',          icon: '↘' },
+const ANIM_DIRS: { id: AnimationDir; icon: string; title: string }[] = [
+  { id: 'none',       icon: '✕',  title: 'off' },
+  { id: 'left',       icon: '←',  title: 'left' },
+  { id: 'right',      icon: '→',  title: 'right' },
+  { id: 'up',         icon: '↑',  title: 'up' },
+  { id: 'down',       icon: '↓',  title: 'down' },
+  { id: 'diag-left',  icon: '↙',  title: 'diag ↙' },
+  { id: 'diag-right', icon: '↘',  title: 'diag ↘' },
 ];
 
 interface Props {
@@ -66,9 +66,9 @@ export function GeneratorSidebar({ state, thumbRefs, onChange, onReset }: Props)
               key={d.id}
               className={`${styles.animBtn} ${state.animation === d.id ? styles.animBtnActive : ''}`}
               onClick={() => onChange({ animation: d.id })}
-              title={d.id === 'none' ? 'No animation' : `Animate ${d.id}`}
+              title={d.title}
             >
-              {d.icon}
+              {d.title}
             </button>
           ))}
         </div>
@@ -99,7 +99,7 @@ export function GeneratorSidebar({ state, thumbRefs, onChange, onReset }: Props)
       {/* Presets */}
       <section className={styles.section}>
         <h3 className={styles.sectionTitle}>presets</h3>
-        <Presets onSelect={s => onChange(s, false)} />
+        <Presets state={state} onSelect={patch => onChange(patch)} />
       </section>
 
     </aside>

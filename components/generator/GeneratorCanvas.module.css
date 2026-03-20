@@ -21,8 +21,11 @@
 
 .canvas {
   display: block;
-  width: 830px;
-  height: 467px;
+  /* Scale canvas to fit the available space while keeping 16:9 */
+  width: 100%;
+  height: auto;
+  max-width: 1280px;
+  aspect-ratio: 16 / 9;
 }
 
 .badge {

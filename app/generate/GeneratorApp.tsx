@@ -44,18 +44,53 @@ export default function GeneratorApp() {
   }, [showToast]);
 
   const handleRandomize = useCallback(() => {
-    const hue = Math.floor(Math.random() * 360);
-    const bgColor  = `hsl(${hue}, ${Math.floor(Math.random()*30)}%, ${Math.floor(Math.random()*15 + 3)}%)`;
-    const patColor = `hsl(${(hue + 120 + Math.floor(Math.random()*120)) % 360}, ${Math.floor(Math.random()*60+40)}%, ${Math.floor(Math.random()*40+50)}%)`;
-    const patIds = PATTERNS.map(p => p.id);
-    const pattern  = patIds[Math.floor(Math.random() * patIds.length)];
-    const anims: import('@/types/pattern').AnimationDir[] = ['none','left','right','up','down','diag-left','diag-right'];
-    const animation = anims[Math.floor(Math.random() * anims.length)];
-    setState({ pattern, bgColor, patColor, animation,
-      size:      Math.floor(Math.random() * 40) + 8,
-      opacity:   Math.floor(Math.random() * 50) + 10,
-      thickness: Math.floor(Math.random() * 3) + 1,
-      rotation:  Math.floor(Math.random() * 180),
+    // Curated palette pairs — bg always dark, pat always vivid
+    const palettes = [
+      { bg: '#0a0a0a', pat: '#c8ff00' }, // lime
+      { bg: '#080810', pat: '#00ccff' }, // cyan
+      { bg: '#0d0a0a', pat: '#ff4d00' }, // orange
+      { bg: '#0a0a12', pat: '#8866ff' }, // purple
+      { bg: '#080f08', pat: '#00ff88' }, // green
+      { bg: '#100808', pat: '#ff5566' }, // red
+      { bg: '#080810', pat: '#ffcc00' }, // gold
+      { bg: '#06100e', pat: '#00ddaa' }, // teal
+      { bg: '#0e0810', pat: '#ff88cc' }, // pink
+      { bg: '#111111', pat: '#ffffff' }, // white on dark
+    ];
+    const palette = palettes[Math.floor(Math.random() * palettes.length)];
+
+    // Weighted pattern list — exclude noise from animation (looks bad)
+    const animatablePatterns = ['dots','grid','rect','diagonal','hatch','plus','hex','waves','circuit'];
+    const allPatterns = PATTERNS.map(p => p.id);
+
+    // Animations with weights — none is less likely to keep it interesting
+    const animChoices: Array<import('@/types/pattern').AnimationDir> =
+      ['none','none','left','right','up','down','diag-left','diag-right'];
+    const animation = animChoices[Math.floor(Math.random() * animChoices.length)];
+
+    // If animating, pick only patterns that look good animated
+    const patPool = animation !== 'none' ? animatablePatterns : allPatterns;
+    const pattern = patPool[Math.floor(Math.random() * patPool.length)];
+
+    // Per-pattern sensible size ranges
+    const sizeMap: Record<string, [number,number]> = {
+      noise: [10,30], dots: [10,28], grid: [16,40], rect: [20,60],
+      diagonal: [8,20], hatch: [10,22], carbon: [4,12], halftone: [10,24],
+      plus: [14,30], hex: [16,34], waves: [14,30], circuit: [16,36],
+    };
+    const [sMin, sMax] = sizeMap[pattern] ?? [10, 30];
+    const size = Math.floor(Math.random() * (sMax - sMin)) + sMin;
+
+    setState({
+      pattern,
+      bgColor:   palette.bg,
+      patColor:  palette.pat,
+      size,
+      opacity:   Math.floor(Math.random() * 40) + 20,
+      thickness: Math.floor(Math.random() * 2) + 1,
+      rotation:  [0, 0, 0, 45, 90, 135][Math.floor(Math.random() * 6)],
+      animation,
+      animSpeed: animation !== 'none' ? Math.floor(Math.random() * 60) + 20 : 40,
     }, false);
     showToast('randomized ✦');
   }, [setState, showToast]);
@@ -99,7 +134,7 @@ export default function GeneratorApp() {
             target="_blank"
             rel="noopener noreferrer"
           >
-            {stars} ★
+            ★ {stars}
           </a>
         </div>
       </header>
@@ -141,7 +176,7 @@ export default function GeneratorApp() {
                 <span className={styles.infoAnim}>⟳ {state.animation}</span>
               </>
             )}
-            <span className={styles.infoRight}>830 × 467 · 16:9</span>
+            <span className={styles.infoRight}>1280 × 720 · 16:9</span>
           </div>
 
           {/* Code panel — flex:1 expands to fill remaining space */}

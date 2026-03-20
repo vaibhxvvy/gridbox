@@ -22,7 +22,7 @@ function renderOffscreen(state: PatternState, w: number, h: number) {
   const ctx = off.getContext('2d')!;
   ctx.fillStyle = state.bgColor;
   ctx.fillRect(0, 0, w, h);
-  drawPattern(ctx, state, 6);
+  drawPattern(ctx, state, 6, 0, 0);
   return off;
 }
 

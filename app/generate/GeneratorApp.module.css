@@ -60,8 +60,12 @@
 
 .tbShare  { background: rgba(200,255,0,0.10); border: 1px solid var(--gb-accent); color: var(--gb-accent); }
 .tbShare:hover  { background: var(--gb-accent); color: #000; }
-.tbGithub { background: var(--gb-s3); border: 1px solid #444; color: var(--gb-text); }
-.tbGithub:hover { background: var(--gb-text); border-color: var(--gb-text); color: #000; }
+.tbGithub {
+  background: var(--gb-s3);
+  border: 1px solid #444;
+  color: var(--gb-text);
+}
+.tbGithub:hover { border-color: var(--gb-accent); color: var(--gb-accent); }
 .tbRandom { background: transparent; border: 1px solid var(--gb-border); color: var(--gb-muted2); }
 .tbRandom:hover { border-color: var(--gb-muted2); color: var(--gb-text); }
 
