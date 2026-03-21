@@ -220,16 +220,14 @@ export default function GeneratorApp() {
             </AnimatePresence>
           </div>
 
-          {/* Canvas */}
-          <div className={styles.canvasWrap}>
-            <GeneratorCanvas
-              canvasRef={canvasRef}
-              onResize={() => requestAnimationFrame(() => redraw())}
-              state={state}
-              aspectRatio={aspectRatio}
-              phoneMode={isPhone}
-            />
-          </div>
+          {/* Canvas — stage handles its own 16:9 sizing */}
+          <GeneratorCanvas
+            canvasRef={canvasRef}
+            onResize={() => requestAnimationFrame(() => redraw())}
+            state={state}
+            aspectRatio={aspectRatio}
+            phoneMode={isPhone}
+          />
 
           {/* Info bar */}
           <div className={styles.infoBar}>

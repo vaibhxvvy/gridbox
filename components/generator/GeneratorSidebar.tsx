@@ -12,7 +12,12 @@ import { ColorPicker } from './ColorPicker';
 import { Presets }     from './Presets';
 import styles from './GeneratorSidebar.module.css';
 
-// Lucide-style open-source SVG direction icons
+// Chevron SVG — open/close indicator for collapsible sections
+const ChevronIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="6 9 12 15 18 9"/>
+  </svg>
+);
 const DirIcons: Record<string, React.ReactNode> = {
   left:        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>,
   right:       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>,
@@ -65,7 +70,7 @@ function Section({
             animate={{ rotate: open ? 180 : 0 }}
             transition={{ duration: 0.2, ease: 'easeInOut' }}
           >
-            ▼
+            <ChevronIcon />
           </motion.span>
         </div>
       </Collapsible.Trigger>

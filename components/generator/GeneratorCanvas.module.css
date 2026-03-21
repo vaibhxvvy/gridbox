@@ -1,30 +1,28 @@
-/* Outer area — fills canvasWrap fully */
-.area {
+/* Stage — the dark 16:9 container that all preview modes live inside */
+.stage {
   width: 100%;
-  height: 100%;
+  aspect-ratio: 16 / 9;
+  background: #050505;
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
   padding: 12px;
   box-sizing: border-box;
 }
 
-/* Phone mode: area stays landscape but shows portrait box centred inside */
-.areaPhone {
-  aspect-ratio: 16 / 9;
-  padding: 12px;
-}
-
-/* The pattern box */
-.box {
+/* Pattern frame — the actual canvas container */
+.frame {
   position: relative;
-  box-shadow: 0 0 0 1px var(--gb-border), 0 4px 20px rgba(0,0,0,0.7);
   overflow: hidden;
+  box-shadow: 0 0 0 1px var(--gb-border);
+  /* Web/custom: fills width at given aspect ratio */
   width: 100%;
+  max-height: 100%;
 }
 
-/* Phone mode: portrait box centred, ~45% width of the landscape area */
-.boxPhone {
+/* Phone mode: portrait frame centred inside the stage */
+.framePhone {
   width: auto;
   height: 100%;
   aspect-ratio: 9 / 16;
@@ -32,7 +30,7 @@
 }
 
 .animBorder {
-  box-shadow: 0 0 0 2px var(--gb-accent), 0 0 14px rgba(200,255,0,0.1);
+  box-shadow: 0 0 0 2px var(--gb-accent), 0 0 16px rgba(200,255,0,0.12);
 }
 
 .canvas {
@@ -41,15 +39,23 @@
   height: 100%;
 }
 
-.badge, .animLabel {
+.animLabel {
   position: absolute; bottom: 8px; right: 8px;
   font-family: var(--gb-font-mono); font-size: 9px;
+  color: var(--gb-accent); background: rgba(0,0,0,0.8);
+  border: 1px solid var(--gb-accent);
   padding: 2px 8px; border-radius: 3px; pointer-events: none;
 }
-.badge     { color: var(--gb-muted);  background: rgba(0,0,0,0.7); border: 1px solid var(--gb-border); }
-.animLabel { color: var(--gb-accent); background: rgba(0,0,0,0.8); border: 1px solid var(--gb-accent); }
 
+/* Mobile */
 @media (max-width: 768px) {
-  .area { padding: 0; }
-  .box  { outline: 2px solid var(--gb-accent); outline-offset: -2px; box-shadow: none; }
+  .stage {
+    padding: 0;
+    aspect-ratio: 16 / 9;
+  }
+  .frame {
+    outline: 2px solid var(--gb-accent);
+    outline-offset: -2px;
+    box-shadow: none;
+  }
 }

@@ -41,21 +41,20 @@ function makeStateKey(s: PatternState): string {
 }
 
 function buildTile(s: PatternState, canvasW: number, canvasH: number): TileCache {
-  const tileW = canvasW * 3;
-  const tileH = canvasH * 3;
+  // Tile must be exactly 2× canvas so the 4-quadrant blit covers any offset up to (W,H).
+  // We draw the pattern with extMult=2 onto a 2×canvas sized offscreen canvas.
+  // extMult=2 means the drawSetup origin is at (-canvasW, -canvasH) — same as if
+  // we had a 2× canvas. This ensures the tile coordinate system matches the main canvas.
+  const tileW = canvasW * 2;
+  const tileH = canvasH * 2;
   const tile  = document.createElement('canvas');
   tile.width  = tileW;
   tile.height = tileH;
   const ctx   = tile.getContext('2d')!;
   ctx.fillStyle = s.bgColor;
   ctx.fillRect(0, 0, tileW, tileH);
-  const tmp = document.createElement('canvas');
-  tmp.width = tileW; tmp.height = tileH;
-  const tc = tmp.getContext('2d')!;
-  tc.fillStyle = s.bgColor;
-  tc.fillRect(0, 0, tileW, tileH);
-  drawPattern(tc, s, 3, 0, 0);
-  ctx.drawImage(tmp, 0, 0);
+  // Draw at extMult=2 — this covers the full 2× tile with the correct pattern origin
+  drawPattern(ctx, s, 2, 0, 0);
   return { canvas: tile, stateKey: makeStateKey(s), tileW, tileH };
 }
 
@@ -120,9 +119,10 @@ export function usePatternRenderer(): UsePatternRendererReturn {
       tileCache.current = buildTile(s, W, H);
     }
     const { canvas: tile, tileW, tileH } = tileCache.current;
-    const wx = ((ox % tileW) + tileW) % tileW;
-    const wy = ((oy % tileH) + tileH) % tileH;
-    // 4-quadrant blit for seamless wrap
+    // Wrap offset to canvas size (tile is 2×, so shifting by up to W/H is always covered)
+    const wx = ((ox % W) + W) % W;
+    const wy = ((oy % H) + H) % H;
+    // 4-quadrant blit — covers the canvas regardless of offset
     ctx.drawImage(tile, wx - tileW, wy - tileH);
     ctx.drawImage(tile, wx,         wy - tileH);
     ctx.drawImage(tile, wx - tileW, wy);

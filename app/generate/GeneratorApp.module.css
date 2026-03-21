@@ -65,19 +65,15 @@
   min-height: 0;
 }
 
-/* ── RIGHT COL — scrollable ── */
+/* ── RIGHT COL ── */
 .rightCol {
   flex: 1;
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
-  overflow-x: hidden;
   min-width: 0;
-  scrollbar-width: thin;
-  scrollbar-color: var(--gb-border) transparent;
+  min-height: 0;
+  overflow: hidden;
 }
-.rightCol::-webkit-scrollbar { width: 4px; }
-.rightCol::-webkit-scrollbar-thumb { background: var(--gb-border); border-radius: 2px; }
 
 /* Preview layout bar */
 .layoutBar {
@@ -101,7 +97,7 @@
   cursor: pointer;
   appearance: none;
   -webkit-appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5'%3E%3Cpath d='M0 0l4 5 4-5z' fill='%23999'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 10px center;
   outline: none;
@@ -128,17 +124,6 @@
 }
 .ratioInput:focus { border-color: var(--gb-accent); }
 .ratioSep { color: var(--gb-muted); font-size: 12px; }
-
-/* Canvas wrap — max-height so code panel is always visible without scrolling */
-.canvasWrap {
-  flex-shrink: 0;
-  max-height: 52vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  background: #050505;
-}
 
 .infoBar {
   flex-shrink: 0;
