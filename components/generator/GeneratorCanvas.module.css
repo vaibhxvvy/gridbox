@@ -80,15 +80,16 @@
   font-family: var(--gb-font-mono);
 }
 
-/* Pattern frame — centered in stage, aspect-ratio driven */
+/* Pattern frame — height fills stage, width follows aspect ratio = perfect letterbox */
 .frame {
   position: relative;
   overflow: hidden;
   box-shadow: 0 0 0 1px var(--gb-border);
-  /* Height fills stage, width follows aspect ratio */
+  /* Height fills stage, width is derived from aspect-ratio */
   height: 100%;
+  width: auto;
+  /* aspect-ratio set via inline style — browser calculates width automatically */
   max-width: 100%;
-  /* aspect-ratio set via inline style */
 }
 
 .animBorder {
