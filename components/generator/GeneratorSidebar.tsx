@@ -1,28 +1,25 @@
 'use client';
 
+import * as Collapsible from '@radix-ui/react-collapsible';
+import * as Tooltip     from '@radix-ui/react-tooltip';
+import { AnimatePresence, motion } from 'motion/react';
 import { useState } from 'react';
 import type { PatternState, AnimationDir } from '@/types/pattern';
-import Link from 'next/link';
+import Link      from 'next/link';
 import { PatternGrid } from './PatternGrid';
 import { Slider }      from './Slider';
 import { ColorPicker } from './ColorPicker';
 import { Presets }     from './Presets';
 import styles from './GeneratorSidebar.module.css';
 
-// Lucide-style open source SVG arrows — correct directions
+// Lucide-style open-source SVG direction icons
 const DirIcons: Record<string, React.ReactNode> = {
-  // Left: arrow pointing left
-  left: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>,
-  // Right: arrow pointing right
-  right: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>,
-  // Up: arrow pointing up
-  up: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>,
-  // Down: arrow pointing down
-  down: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>,
-  // Diag-left: arrow pointing top-left (↖)
+  left:        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>,
+  right:       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>,
+  up:          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>,
+  down:        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>,
   'diag-left': <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="17" y1="17" x2="7" y2="7"/><polyline points="7 17 7 7 17 7"/></svg>,
-  // Diag-right: arrow pointing top-right (↗)
-  'diag-right': <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>,
+  'diag-right':<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>,
 };
 
 const ANIM_DIRS: { id: AnimationDir; label: string }[] = [
@@ -41,102 +38,167 @@ interface Props {
   onReset:   () => void;
 }
 
+function Section({
+  title, defaultOpen = true, future = false,
+  children,
+}: {
+  title: string; defaultOpen?: boolean; future?: boolean; children?: React.ReactNode;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+
+  if (future) {
+    return (
+      <div className={styles.sectionHead} style={{ opacity: 0.4, cursor: 'default' }}>
+        <span className={styles.sectionTitle}>{title}</span>
+        <span className={styles.futureBadge}>soon</span>
+      </div>
+    );
+  }
+
+  return (
+    <Collapsible.Root open={open} onOpenChange={setOpen}>
+      <Collapsible.Trigger asChild>
+        <div className={styles.sectionHead}>
+          <span className={styles.sectionTitle}>{title}</span>
+          <motion.span
+            className={styles.chevron}
+            animate={{ rotate: open ? 180 : 0 }}
+            transition={{ duration: 0.2, ease: 'easeInOut' }}
+          >
+            ▼
+          </motion.span>
+        </div>
+      </Collapsible.Trigger>
+      <AnimatePresence initial={false}>
+        {open && (
+          <Collapsible.Content forceMount asChild>
+            <motion.div
+              className={styles.sectionBody}
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.2, ease: 'easeInOut' }}
+              style={{ overflow: 'hidden' }}
+            >
+              {children}
+            </motion.div>
+          </Collapsible.Content>
+        )}
+      </AnimatePresence>
+    </Collapsible.Root>
+  );
+}
+
 export function GeneratorSidebar({ state, thumbRefs, onChange, onReset }: Props) {
-  const [patternsOpen, setPatternsOpen] = useState(true);
-  const [presetsOpen,  setPresetsOpen]  = useState(false);
   const animOn = state.animation !== 'none';
 
   return (
-    <aside className={styles.sidebar}>
+    <Tooltip.Provider delayDuration={400}>
+      <aside className={styles.sidebar}>
 
-      <Link href="/install" className={styles.installBanner}>
-        <span className={styles.installDot} />
-        <code className={styles.installCmd}>npm install gridmint</code>
-        <span className={styles.installArrow}>→</span>
-      </Link>
+        <Link href="/install" className={styles.installBanner}>
+          <span className={styles.installDot} />
+          <code className={styles.installCmd}>npm install gridmint</code>
+          <span className={styles.installArrow}>→</span>
+        </Link>
 
-      {/* PATTERNS — always mounted so canvases keep their drawn content */}
-      <div className={styles.sectionHead} onClick={() => setPatternsOpen(o => !o)}>
-        <span className={styles.sectionTitle}>PATTERNS</span>
-        <span className={styles.chevron}>{patternsOpen ? '▲' : '▼'}</span>
-      </div>
-      <div className={styles.sectionBody} style={{ display: patternsOpen ? undefined : 'none' }}>
-        <PatternGrid active={state.pattern} thumbRefs={thumbRefs} onSelect={id => onChange({ pattern: id }, false)} />
-      </div>
+        {/* PATTERNS */}
+        <Section title="PATTERNS" defaultOpen>
+          <PatternGrid
+            active={state.pattern}
+            thumbRefs={thumbRefs}
+            onSelect={id => onChange({ pattern: id }, false)}
+          />
+        </Section>
 
-      {/* ADJUST */}
-      <div className={styles.sectionHead}>
-        <span className={styles.sectionTitle}>ADJUST</span>
-      </div>
-      <div className={styles.sectionBody}>
-        <div className={styles.sliders}>
-          <Slider label="size"      value={state.size}      min={4}  max={state.pattern === 'rect' ? 240 : 80} unit="px" onChange={v => onChange({ size: v })} />
-          <Slider label="opacity"   value={state.opacity}   min={1}  max={100} unit="%" onChange={v => onChange({ opacity: v })} />
-          <Slider label="thickness" value={state.thickness} min={1}  max={20}  unit="px" onChange={v => onChange({ thickness: v })} />
-          <Slider label="rotation"  value={state.rotation}  min={0}  max={180} unit="°" onChange={v => onChange({ rotation: v })} />
-        </div>
-      </div>
-
-      {/* ANIMATE — toggle + direction grid + speed only (no play/pause here) */}
-      <div className={styles.sectionHead}>
-        <span className={styles.sectionTitle}>ANIMATE</span>
-        <button
-          className={`${styles.toggle} ${animOn ? styles.toggleOn : ''}`}
-          onClick={() => onChange({ animation: animOn ? 'none' : 'right' })}
-          title={animOn ? 'Stop animation' : 'Start animation'}
-        >
-          <span className={styles.toggleKnob} />
-        </button>
-      </div>
-      <div className={styles.sectionBody}>
-        <div className={`${styles.dirGrid} ${!animOn ? styles.dirGridDisabled : ''}`}>
-          {ANIM_DIRS.map(d => (
-            <button
-              key={d.id}
-              className={`${styles.dirBtn} ${animOn && state.animation === d.id ? styles.dirBtnActive : ''}`}
-              onClick={() => onChange({ animation: d.id })}
-              title={d.label}
-              disabled={!animOn}
-            >
-              {DirIcons[d.id]}
-            </button>
-          ))}
-        </div>
-        {animOn && (
-          <div className={styles.speedRow}>
-            <Slider label="speed" value={state.animSpeed ?? 40} min={5} max={200} unit="" onChange={v => onChange({ animSpeed: v })} />
+        {/* ADJUST — debounce heavy sliders so canvas doesn't redraw every px */}
+        <Section title="ADJUST" defaultOpen>
+          <div className={styles.sliders}>
+            <Slider label="size"      value={state.size}      min={4}  max={state.pattern === 'rect' ? 240 : 80} unit="px" debounce={30} onChange={v => onChange({ size: v })} />
+            <Slider label="opacity"   value={state.opacity}   min={1}  max={100} unit="%" onChange={v => onChange({ opacity: v })} />
+            <Slider label="thickness" value={state.thickness} min={1}  max={20}  unit="px" onChange={v => onChange({ thickness: v })} />
+            <Slider label="rotation"  value={state.rotation}  min={0}  max={180} unit="°" debounce={30} onChange={v => onChange({ rotation: v })} />
           </div>
-        )}
-      </div>
+        </Section>
 
-      {/* COLORS */}
-      <div className={styles.sectionHead}>
-        <span className={styles.sectionTitle}>COLORS</span>
-      </div>
-      <div className={styles.sectionBody}>
-        <ColorPicker label="background" value={state.bgColor}  onChange={v => onChange({ bgColor: v })} />
-        <ColorPicker label="pattern"    value={state.patColor} onChange={v => onChange({ patColor: v })} />
-        <button className={styles.resetBtn} onClick={onReset}>↺ reset all</button>
-      </div>
+        {/* ANIMATE */}
+        <Section title="ANIMATE" defaultOpen>
+          {/* Toggle */}
+          <div className={styles.animToggleRow}>
+            <span className={styles.animToggleLabel}>{animOn ? 'on' : 'off'}</span>
+            <button
+              className={`${styles.toggle} ${animOn ? styles.toggleOn : ''}`}
+              onClick={() => onChange({ animation: animOn ? 'none' : 'right' })}
+            >
+              <motion.span
+                className={styles.toggleKnob}
+                animate={{ x: animOn ? 16 : 0 }}
+                transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+              />
+            </button>
+          </div>
 
-      {/* PRESETS — always mounted */}
-      <div className={styles.sectionHead} onClick={() => setPresetsOpen(o => !o)}>
-        <span className={styles.sectionTitle}>PRESETS</span>
-        <span className={styles.chevron}>{presetsOpen ? '▲' : '▼'}</span>
-      </div>
-      <div className={styles.sectionBody} style={{ display: presetsOpen ? undefined : 'none' }}>
-        <Presets state={state} onSelect={patch => onChange(patch)} />
-      </div>
+          {/* Direction buttons with tooltips */}
+          <div className={`${styles.dirGrid} ${!animOn ? styles.dirGridDisabled : ''}`}>
+            {ANIM_DIRS.map(d => (
+              <Tooltip.Root key={d.id}>
+                <Tooltip.Trigger asChild>
+                  <motion.button
+                    className={`${styles.dirBtn} ${animOn && state.animation === d.id ? styles.dirBtnActive : ''}`}
+                    onClick={() => onChange({ animation: d.id })}
+                    disabled={!animOn}
+                    whileHover={animOn ? { scale: 1.08 } : {}}
+                    whileTap={animOn ? { scale: 0.94 } : {}}
+                    transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+                  >
+                    {DirIcons[d.id]}
+                  </motion.button>
+                </Tooltip.Trigger>
+                <Tooltip.Portal>
+                  <Tooltip.Content className={styles.tooltip} sideOffset={5}>
+                    {d.label}
+                    <Tooltip.Arrow className={styles.tooltipArrow} />
+                  </Tooltip.Content>
+                </Tooltip.Portal>
+              </Tooltip.Root>
+            ))}
+          </div>
 
-      <div className={`${styles.sectionHead} ${styles.sectionDisabled}`}>
-        <span className={styles.sectionTitle}>GRADIENTS</span>
-        <span className={styles.futureBadge}>soon</span>
-      </div>
-      <div className={`${styles.sectionHead} ${styles.sectionDisabled}`}>
-        <span className={styles.sectionTitle}>TEXTURES</span>
-        <span className={styles.futureBadge}>soon</span>
-      </div>
+          {/* Speed slider */}
+          <AnimatePresence>
+            {animOn && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.18 }}
+                style={{ overflow: 'hidden' }}
+              >
+                <div className={styles.speedRow}>
+                  <Slider label="speed" value={state.animSpeed ?? 40} min={5} max={200} unit="" onChange={v => onChange({ animSpeed: v })} />
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </Section>
 
-    </aside>
+        {/* COLORS */}
+        <Section title="COLORS" defaultOpen>
+          <ColorPicker label="background" value={state.bgColor}  onChange={v => onChange({ bgColor: v })} />
+          <ColorPicker label="pattern"    value={state.patColor} onChange={v => onChange({ patColor: v })} />
+          <button className={styles.resetBtn} onClick={onReset}>↺ reset all</button>
+        </Section>
+
+        {/* PRESETS */}
+        <Section title="PRESETS" defaultOpen={false}>
+          <Presets state={state} onSelect={patch => onChange(patch)} />
+        </Section>
+
+        {/* Future sections */}
+        <Section title="GRADIENTS" future />
+        <Section title="TEXTURES"  future />
+
+      </aside>
+    </Tooltip.Provider>
   );
 }

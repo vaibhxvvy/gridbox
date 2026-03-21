@@ -1,7 +1,7 @@
 'use client';
 
+import { motion } from 'motion/react';
 import { PATTERNS } from '@/lib/patterns/engine';
-import type { PatternState } from '@/types/pattern';
 import styles from './PatternGrid.module.css';
 
 interface Props {
@@ -14,11 +14,14 @@ export function PatternGrid({ active, thumbRefs, onSelect }: Props) {
   return (
     <div className={styles.grid}>
       {PATTERNS.map(p => (
-        <button
+        <motion.button
           key={p.id}
           className={`${styles.cell} ${p.id === active ? styles.active : ''}`}
           onClick={() => onSelect(p.id)}
           title={p.name}
+          whileHover={{ scale: 1.05, borderColor: 'var(--gb-accent)' }}
+          whileTap={{ scale: 0.96 }}
+          transition={{ type: 'spring', stiffness: 400, damping: 22 }}
         >
           <canvas
             width={58}
@@ -27,7 +30,14 @@ export function PatternGrid({ active, thumbRefs, onSelect }: Props) {
             className={styles.canvas}
           />
           <span className={styles.label}>{p.name}</span>
-        </button>
+          {p.id === active && (
+            <motion.div
+              className={styles.activePing}
+              layoutId="active-pattern"
+              transition={{ type: 'spring', stiffness: 300, damping: 28 }}
+            />
+          )}
+        </motion.button>
       ))}
     </div>
   );

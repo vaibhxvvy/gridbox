@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+import { motion, AnimatePresence } from 'motion/react';
 import { usePatternRenderer }  from '@/lib/use-pattern-renderer';
 import { PATTERNS }            from '@/lib/patterns/engine';
 import { decodeState }         from '@/lib/url-state';
@@ -151,15 +152,37 @@ export default function GeneratorApp() {
       <header className={styles.topbar}>
         <Link href="/" className={styles.topbarLogo}>gridmint</Link>
         <div className={styles.topbarActions}>
-          <button className={`${styles.tbBtn} ${styles.tbRandom}`} onClick={handleRandomize} title="Randomize (X)">
+          <motion.button
+            className={`${styles.tbBtn} ${styles.tbRandom}`}
+            onClick={handleRandomize}
+            title="Randomize (X)"
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+          >
             <IconShuffle /> Random
-          </button>
-          <button className={`${styles.tbBtn} ${styles.tbShare}`} onClick={handleShare} title="Share (S)">
+          </motion.button>
+          <motion.button
+            className={`${styles.tbBtn} ${styles.tbShare}`}
+            onClick={handleShare}
+            title="Share (S)"
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+          >
             <IconShare /> Share
-          </button>
-          <a className={`${styles.tbBtn} ${styles.tbGithub}`} href="https://github.com/vaibhxvvy/gridbox" target="_blank" rel="noopener noreferrer">
+          </motion.button>
+          <motion.a
+            className={`${styles.tbBtn} ${styles.tbGithub}`}
+            href="https://github.com/vaibhxvvy/gridbox"
+            target="_blank"
+            rel="noopener noreferrer"
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+          >
             <IconGithub /><span>{stars}</span>
-          </a>
+          </motion.a>
         </div>
       </header>
 
@@ -179,16 +202,25 @@ export default function GeneratorApp() {
               <option value="phone">Phone View</option>
               <option value="custom">Custom Ratio</option>
             </select>
-            {previewLayout === 'custom' && (
-              <div className={styles.customRatio}>
-                <input type="text" value={customW} onChange={e => setCustomW(e.target.value)} className={styles.ratioInput} placeholder="16" maxLength={3}/>
-                <span className={styles.ratioSep}>:</span>
-                <input type="text" value={customH} onChange={e => setCustomH(e.target.value)} className={styles.ratioInput} placeholder="9" maxLength={3}/>
-              </div>
-            )}
+            <AnimatePresence>
+              {previewLayout === 'custom' && (
+                <motion.div
+                  className={styles.customRatio}
+                  initial={{ opacity: 0, width: 0 }}
+                  animate={{ opacity: 1, width: 'auto' }}
+                  exit={{    opacity: 0, width: 0 }}
+                  transition={{ duration: 0.18 }}
+                  style={{ overflow: 'hidden' }}
+                >
+                  <input type="text" value={customW} onChange={e => setCustomW(e.target.value)} className={styles.ratioInput} placeholder="16" maxLength={3}/>
+                  <span className={styles.ratioSep}>:</span>
+                  <input type="text" value={customH} onChange={e => setCustomH(e.target.value)} className={styles.ratioInput} placeholder="9" maxLength={3}/>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
-          {/* Canvas — constrained height so code is always visible */}
+          {/* Canvas */}
           <div className={styles.canvasWrap}>
             <GeneratorCanvas
               canvasRef={canvasRef}
@@ -208,15 +240,38 @@ export default function GeneratorApp() {
               <span className={styles.infoDims}>
                 {isPhone ? '9:16' : previewLayout === 'custom' ? `${wParsed}:${hParsed}` : '16:9'}
               </span>
-              {isAnimating && (
-                <button className={`${styles.playBtn} ${!isPaused ? styles.playBtnActive : ''}`} onClick={handlePlayPause} title="Play/Pause (Space)">
-                  {isPaused ? <IconPlay /> : <IconPause />}
-                </button>
-              )}
+              <AnimatePresence>
+                {isAnimating && (
+                  <motion.button
+                    className={`${styles.playBtn} ${!isPaused ? styles.playBtnActive : ''}`}
+                    onClick={handlePlayPause}
+                    title="Play/Pause (Space)"
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{    opacity: 0, scale: 0.8 }}
+                    whileHover={{ scale: 1.12 }}
+                    whileTap={{ scale: 0.9 }}
+                    transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+                  >
+                    <AnimatePresence mode="wait">
+                      <motion.span
+                        key={isPaused ? 'play' : 'pause'}
+                        initial={{ opacity: 0, rotate: -90 }}
+                        animate={{ opacity: 1, rotate: 0 }}
+                        exit={{    opacity: 0, rotate:  90 }}
+                        transition={{ duration: 0.12 }}
+                        style={{ display: 'flex', alignItems: 'center' }}
+                      >
+                        {isPaused ? <IconPlay /> : <IconPause />}
+                      </motion.span>
+                    </AnimatePresence>
+                  </motion.button>
+                )}
+              </AnimatePresence>
             </span>
           </div>
 
-          {/* Code output — always visible */}
+          {/* Code output */}
           <div className={styles.codePanel}>
             <CodeOutput state={state} />
           </div>

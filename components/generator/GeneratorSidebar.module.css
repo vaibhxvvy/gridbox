@@ -193,3 +193,37 @@
   .sectionHead { padding: 12px 16px 10px; }
   .sectionBody { padding: 12px 16px; }
 }
+
+/* ── Tooltip ── */
+.tooltip {
+  font-family: var(--gb-font-mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  background: var(--gb-s2);
+  color: var(--gb-text);
+  border: 1px solid var(--gb-border);
+  border-radius: 4px;
+  padding: 4px 8px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.6);
+  z-index: 9999;
+  will-change: transform, opacity;
+}
+.tooltipArrow { fill: var(--gb-border); }
+
+/* Animate toggle row */
+.animToggleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.animToggleLabel {
+  font-family: var(--gb-font-mono);
+  font-size: 10px;
+  color: var(--gb-muted);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* Speed row */
+.speedRow { padding-top: 4px; }

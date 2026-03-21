@@ -1,10 +1,10 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { validHex } from '@/lib/patterns/engine';
 import styles from './ColorPicker.module.css';
 
-// Convert HSV to hex
 function hsvToHex(h: number, s: number, v: number): string {
   const f = (n: number) => {
     const k = (n + h / 60) % 6;
@@ -14,10 +14,9 @@ function hsvToHex(h: number, s: number, v: number): string {
   return `#${toHex(f(5))}${toHex(f(3))}${toHex(f(1))}`;
 }
 
-// Convert hex to HSV
 function hexToHsv(hex: string): [number, number, number] {
   const h = hex.replace('#', '');
-  if (h.length !== 6) return [0, 0, 0];
+  if (!/^[0-9a-fA-F]{6}$/.test(h)) return [0, 0, 0];
   const r = parseInt(h.slice(0,2),16)/255;
   const g = parseInt(h.slice(2,4),16)/255;
   const b = parseInt(h.slice(4,6),16)/255;
@@ -33,30 +32,30 @@ function hexToHsv(hex: string): [number, number, number] {
   return [hue, max === 0 ? 0 : d / max, max];
 }
 
-interface Props {
-  label: string;
-  value: string;
-  onChange: (hex: string) => void;
+// Pure hue color — used as base for the SB square background
+function hueColor(h: number): string {
+  return hsvToHex(h, 1, 1);
 }
 
+const QUICK = ['#0a0a0a','#111','#c8ff00','#00ff41','#00ccff','#ff4d00','#ffffff','#ff00cc','#ffcc00','#8866ff','#00ddaa','#ff5555'];
+
+interface Props { label: string; value: string; onChange: (hex: string) => void; }
+
 export function ColorPicker({ label, value, onChange }: Props) {
-  const [open, setOpen]       = useState(false);
-  const [hsv, setHsv]         = useState<[number,number,number]>(() => hexToHsv(value));
+  const [open,     setOpen]     = useState(false);
+  const [hsv,      setHsv]      = useState<[number,number,number]>(() => hexToHsv(value));
   const [hexInput, setHexInput] = useState(value);
   const [dragging, setDragging] = useState<'sb'|'hue'|null>(null);
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const sbRef   = useRef<HTMLDivElement>(null);
+  const hueRef  = useRef<HTMLDivElement>(null);
 
-  const wrapRef  = useRef<HTMLDivElement>(null);
-  const sbRef    = useRef<HTMLDivElement>(null);
-  const hueRef   = useRef<HTMLDivElement>(null);
-
-  // Sync from external value changes
   useEffect(() => {
     if (document.activeElement?.tagName === 'INPUT') return;
     setHsv(hexToHsv(value));
     setHexInput(value);
   }, [value]);
 
-  // Close on outside click
   useEffect(() => {
     if (!open) return;
     const fn = (e: MouseEvent) => {
@@ -72,13 +71,12 @@ export function ColorPicker({ label, value, onChange }: Props) {
     onChange(hex);
   }, [onChange]);
 
-  // SB (saturation/brightness) drag
-  const handleSbInteraction = useCallback((e: React.MouseEvent | React.TouchEvent) => {
+  const handleSb = useCallback((e: React.MouseEvent | MouseEvent | TouchEvent) => {
     const el = sbRef.current;
     if (!el) return;
-    const rect = el.getBoundingClientRect();
-    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
-    const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
+    const rect   = el.getBoundingClientRect();
+    const clientX = 'touches' in e ? (e as TouchEvent).touches[0].clientX : (e as MouseEvent).clientX;
+    const clientY = 'touches' in e ? (e as TouchEvent).touches[0].clientY : (e as MouseEvent).clientY;
     const s = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
     const v = Math.max(0, Math.min(1, 1 - (clientY - rect.top) / rect.height));
     const next: [number,number,number] = [hsv[0], s, v];
@@ -86,24 +84,21 @@ export function ColorPicker({ label, value, onChange }: Props) {
     commit(next[0], next[1], next[2]);
   }, [hsv, commit]);
 
-  // Hue drag
-  const handleHueInteraction = useCallback((e: React.MouseEvent | React.TouchEvent) => {
+  const handleHue = useCallback((e: React.MouseEvent | MouseEvent | TouchEvent) => {
     const el = hueRef.current;
     if (!el) return;
-    const rect = el.getBoundingClientRect();
-    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+    const rect   = el.getBoundingClientRect();
+    const clientX = 'touches' in e ? (e as TouchEvent).touches[0].clientX : (e as MouseEvent).clientX;
     const h = Math.max(0, Math.min(360, ((clientX - rect.left) / rect.width) * 360));
     const next: [number,number,number] = [h, hsv[1], hsv[2]];
     setHsv(next);
     commit(next[0], next[1], next[2]);
   }, [hsv, commit]);
 
-  // Global mouse/touch move/up for drag
   useEffect(() => {
     if (!dragging) return;
     const move = (e: MouseEvent | TouchEvent) => {
-      if (dragging === 'sb') handleSbInteraction(e as any);
-      if (dragging === 'hue') handleHueInteraction(e as any);
+      dragging === 'sb' ? handleSb(e) : handleHue(e);
     };
     const up = () => setDragging(null);
     window.addEventListener('mousemove', move);
@@ -116,20 +111,21 @@ export function ColorPicker({ label, value, onChange }: Props) {
       window.removeEventListener('mouseup', up);
       window.removeEventListener('touchend', up);
     };
-  }, [dragging, handleSbInteraction, handleHueInteraction]);
+  }, [dragging, handleSb, handleHue]);
 
   const hexColor = hsvToHex(hsv[0], hsv[1], hsv[2]);
-  const hueColor = hsvToHex(hsv[0], 1, 1);
 
   return (
     <div className={styles.block} ref={wrapRef}>
       <div className={styles.row}>
-        <button
+        <motion.button
           className={styles.swatch}
           style={{ background: value }}
           onClick={() => setOpen(o => !o)}
+          whileHover={{ scale: 1.12 }}
+          whileTap={{ scale: 0.96 }}
+          transition={{ type: 'spring', stiffness: 400, damping: 20 }}
           type="button"
-          title={label}
         />
         <span className={styles.label}>{label}</span>
         <input
@@ -141,78 +137,85 @@ export function ColorPicker({ label, value, onChange }: Props) {
             const v = e.target.value.startsWith('#') ? e.target.value : '#' + e.target.value;
             if (validHex(v)) { setHsv(hexToHsv(v)); onChange(v); }
           }}
-          onBlur={() => {
-            if (!validHex(hexInput)) setHexInput(value);
-          }}
+          onBlur={() => { if (!validHex(hexInput)) setHexInput(value); }}
           maxLength={7}
           spellCheck={false}
         />
       </div>
 
-      {open && (
-        <div className={styles.picker}>
-          {/* SB square */}
-          <div
-            ref={sbRef}
-            className={styles.sbSquare}
-            style={{ background: `hue-rotate(${hsv[0]}deg)` }}
-            onMouseDown={e => { setDragging('sb'); handleSbInteraction(e); }}
-            onTouchStart={e => { setDragging('sb'); handleSbInteraction(e); }}
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            className={styles.picker}
+            initial={{ opacity: 0, y: -6, scale: 0.97 }}
+            animate={{ opacity: 1, y: 0,  scale: 1    }}
+            exit={{    opacity: 0, y: -6, scale: 0.97 }}
+            transition={{ duration: 0.15, ease: 'easeOut' }}
           >
-            <div className={styles.sbWhite} />
-            <div className={styles.sbBlack} />
+            {/* SB square — background is the pure hue, white+black gradients overlay */}
             <div
-              className={styles.sbCursor}
-              style={{
-                left: `${hsv[1] * 100}%`,
-                top:  `${(1 - hsv[2]) * 100}%`,
-                background: hexColor,
-              }}
-            />
-          </div>
-
-          {/* Hue bar */}
-          <div
-            ref={hueRef}
-            className={styles.hueBar}
-            onMouseDown={e => { setDragging('hue'); handleHueInteraction(e); }}
-            onTouchStart={e => { setDragging('hue'); handleHueInteraction(e); }}
-          >
-            <div
-              className={styles.hueCursor}
-              style={{ left: `${(hsv[0] / 360) * 100}%`, background: hueColor }}
-            />
-          </div>
-
-          {/* Hex + preview */}
-          <div className={styles.hexRow}>
-            <div className={styles.previewSwatch} style={{ background: hexColor }} />
-            <input
-              className={styles.hexInputLarge}
-              value={hexInput}
-              onChange={e => {
-                setHexInput(e.target.value);
-                const v = e.target.value.startsWith('#') ? e.target.value : '#' + e.target.value;
-                if (validHex(v)) { setHsv(hexToHsv(v)); onChange(v); }
-              }}
-              spellCheck={false}
-              maxLength={7}
-            />
-          </div>
-
-          {/* Quick swatches */}
-          <div className={styles.quickSwatches}>
-            {['#0a0a0a','#111','#c8ff00','#00ff41','#00ccff','#ff4d00','#ffffff','#ff00cc','#ffcc00','#8866ff','#00ddaa','#ff5555'].map(h => (
-              <button
-                key={h}
-                className={styles.quickSwatch}
-                style={{ background: h }}
-                onClick={() => { setHsv(hexToHsv(h)); setHexInput(h); onChange(h); }}
+              ref={sbRef}
+              className={styles.sbSquare}
+              style={{ backgroundColor: hueColor(hsv[0]) }}
+              onMouseDown={e => { setDragging('sb'); handleSb(e); }}
+              onTouchStart={e => { setDragging('sb'); handleSb(e.nativeEvent as unknown as TouchEvent); }}
+            >
+              <div className={styles.sbWhite} />
+              <div className={styles.sbBlack} />
+              <motion.div
+                className={styles.sbCursor}
+                style={{ left: `${hsv[1] * 100}%`, top: `${(1 - hsv[2]) * 100}%`, background: hexColor }}
+                animate={{ left: `${hsv[1] * 100}%`, top: `${(1 - hsv[2]) * 100}%` }}
+                transition={{ duration: 0 }}
               />
-            ))}
-          </div>
-        </div>
-      )}
+            </div>
+
+            {/* Hue bar */}
+            <div
+              ref={hueRef}
+              className={styles.hueBar}
+              onMouseDown={e => { setDragging('hue'); handleHue(e); }}
+              onTouchStart={e => { setDragging('hue'); handleHue(e.nativeEvent as unknown as TouchEvent); }}
+            >
+              <div
+                className={styles.hueCursor}
+                style={{ left: `${(hsv[0] / 360) * 100}%`, background: hueColor(hsv[0]) }}
+              />
+            </div>
+
+            {/* Hex + preview */}
+            <div className={styles.hexRow}>
+              <div className={styles.previewSwatch} style={{ background: hexColor }} />
+              <input
+                className={styles.hexInputLarge}
+                value={hexInput}
+                onChange={e => {
+                  setHexInput(e.target.value);
+                  const v = e.target.value.startsWith('#') ? e.target.value : '#' + e.target.value;
+                  if (validHex(v)) { setHsv(hexToHsv(v)); onChange(v); }
+                }}
+                spellCheck={false}
+                maxLength={7}
+              />
+            </div>
+
+            {/* Quick swatches */}
+            <div className={styles.quickSwatches}>
+              {QUICK.map(h => (
+                <motion.button
+                  key={h}
+                  className={styles.quickSwatch}
+                  style={{ background: h }}
+                  onClick={() => { setHsv(hexToHsv(h)); setHexInput(h); onChange(h); }}
+                  whileHover={{ scale: 1.25 }}
+                  whileTap={{ scale: 0.9 }}
+                  transition={{ type: 'spring', stiffness: 500, damping: 20 }}
+                />
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
