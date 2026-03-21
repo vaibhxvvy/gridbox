@@ -7,7 +7,6 @@ import { DEFAULT_STATE, encodeState } from '@/lib/url-state';
 
 const THUMB_SIZE = 58;
 
-// Per-pattern defaults — loaded when switching TO that pattern
 const PATTERN_DEFAULTS: Record<string, Partial<PatternState>> = {
   noise:    { size: 20, opacity: 20, thickness: 1, rotation: 0, animation: 'none', animSpeed: 40 },
   dots:     { size: 18, opacity: 25, thickness: 2, rotation: 0, animation: 'none', animSpeed: 40 },
@@ -23,10 +22,9 @@ const PATTERN_DEFAULTS: Record<string, Partial<PatternState>> = {
   circuit:  { size: 24, opacity: 50, thickness: 1, rotation: 0, animation: 'none', animSpeed: 40 },
 };
 
-// Per-pattern saved state — remembers user's settings for each pattern
-// so switching away and back restores what they had
-type PerPatternState = Partial<Omit<PatternState, 'pattern'>>;
-const perPatternMemory = new Map<string, PerPatternState>();
+// Per-pattern memory — remembers user settings when switching patterns
+type PerPatternMem = Partial<Omit<PatternState, 'pattern'>>;
+const patternMemory = new Map<string, PerPatternMem>();
 
 interface UsePatternRendererReturn {
   state:      PatternState;
@@ -39,45 +37,33 @@ interface UsePatternRendererReturn {
 
 export function usePatternRenderer(): UsePatternRendererReturn {
   const [state, setStateRaw] = useState<PatternState>(DEFAULT_STATE);
-  const stateRef   = useRef<PatternState>(DEFAULT_STATE);
-  const canvasRef  = useRef<HTMLCanvasElement>(null);
-  const thumbRefs  = useRef<Record<string, HTMLCanvasElement | null>>({});
+  const stateRef  = useRef<PatternState>(DEFAULT_STATE);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const thumbRefs = useRef<Record<string, HTMLCanvasElement | null>>({});
 
-  // Single RAF id for one-shot renders
   const rafId      = useRef<number>(0);
-  // Animation loop RAF id
   const animRafId  = useRef<number>(0);
+  // offset stays in [0, size) — wraps cleanly, never resets visually
   const animOffset = useRef({ x: 0, y: 0 });
   const lastTime   = useRef<number>(0);
-
-  // Thumb: only redraw active thumb during slider drag
   const thumbTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // ── draw preview ─────────────────────────────────────────────────
+  // ── draw preview ──────────────────────────────────────────────────
+  // ox/oy are in [0, size) — passed directly into drawPattern which
+  // forwards them to drawSetup as a pre-rotation translation offset.
+  // extMult=5 draws 5× the canvas area so offset never causes gaps.
   const drawPreview = useCallback((s: PatternState, ox = 0, oy = 0) => {
     const canvas = canvasRef.current;
     if (!canvas || !canvas.width || !canvas.height) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
-
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = s.bgColor;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    if (ox !== 0 || oy !== 0) {
-      // Translate before drawing so pattern slides smoothly.
-      // extMult=6 draws well beyond canvas edges so no gaps appear.
-      // No wrapping needed — extMult coverage handles it.
-      ctx.save();
-      ctx.translate(ox, oy);
-      drawPattern(ctx, s, 6, 0, 0);
-      ctx.restore();
-    } else {
-      drawPattern(ctx, s, 5, 0, 0);
-    }
+    drawPattern(ctx, s, 5, ox, oy);
   }, []);
 
-  // ── draw single thumb ────────────────────────────────────────────
+  // ── draw thumb ────────────────────────────────────────────────────
   const drawThumb = useCallback((patId: string, s: PatternState) => {
     const canvas = thumbRefs.current[patId];
     if (!canvas || !canvas.width || !canvas.height) return;
@@ -96,23 +82,28 @@ export function usePatternRenderer(): UsePatternRendererReturn {
   }, []);
 
   // ── animation loop ────────────────────────────────────────────────
+  // Key: offset always wraps to [0, size) so it NEVER resets — just
+  // cycles through the same tile-sized range forever, perfectly seamless.
   const stopAnim = useCallback(() => {
     cancelAnimationFrame(animRafId.current);
     animRafId.current = 0;
-    animOffset.current = { x: 0, y: 0 };
-    lastTime.current = 0;
+    lastTime.current  = 0;
+    // Don't reset offset — keep position so resuming feels smooth
   }, []);
 
   const startAnim = useCallback((s: PatternState) => {
     stopAnim();
     if (s.animation === 'none') return;
+
     const tick = (now: number) => {
       if (!lastTime.current) lastTime.current = now;
-      const dt = Math.min((now - lastTime.current) / 1000, 0.05);
+      const dt    = Math.min((now - lastTime.current) / 1000, 0.05); // max 50ms step
       lastTime.current = now;
+
       const speed = stateRef.current.animSpeed ?? 40;
-      const o = animOffset.current;
-      const size = Math.max(stateRef.current.size, 8);
+      const size  = Math.max(stateRef.current.size, 4);
+      const o     = animOffset.current;
+
       switch (stateRef.current.animation) {
         case 'left':       o.x -= speed * dt; break;
         case 'right':      o.x += speed * dt; break;
@@ -121,13 +112,16 @@ export function usePatternRenderer(): UsePatternRendererReturn {
         case 'diag-left':  o.x -= speed * dt; o.y -= speed * dt; break;
         case 'diag-right': o.x += speed * dt; o.y -= speed * dt; break;
       }
-      // Wrap to [-size, size] to prevent unbounded float growth
-      const wrap = (v: number) => ((v % size) + size) % size;
-      o.x = wrap(o.x);
-      o.y = wrap(o.y);
+
+      // Wrap to [0, size) — this is the key to seamless infinite loop
+      // modulo can return negative in JS so we add size before mod
+      o.x = ((o.x % size) + size) % size;
+      o.y = ((o.y % size) + size) % size;
+
       drawPreview(stateRef.current, o.x, o.y);
       animRafId.current = requestAnimationFrame(tick);
     };
+
     animRafId.current = requestAnimationFrame(tick);
   }, [drawPreview, stopAnim]);
 
@@ -141,26 +135,25 @@ export function usePatternRenderer(): UsePatternRendererReturn {
       rafId.current = requestAnimationFrame(() => drawPreview(s, 0, 0));
     }
 
-    // Thumbs: on slider drag only redraw active thumb (fast)
-    // on pattern switch redraw all thumbs (staggered so no jank)
     if (thumbTimer.current) clearTimeout(thumbTimer.current);
     if (redrawAllThumbs) {
-      // Stagger all 12 thumbs, each with its OWN remembered state
-      PATTERNS.forEach((pat, i) => {
+      PATTERNS.forEach((pat, i) =>
         setTimeout(() => requestAnimationFrame(() => {
-          // Each thumb uses that pattern's remembered state, NOT current state
-          const mem = perPatternMemory.get(pat.id);
-          const thumbState: PatternState = mem
-            ? { ...DEFAULT_STATE, ...PATTERN_DEFAULTS[pat.id], ...mem, pattern: pat.id, bgColor: s.bgColor }
-            : { ...DEFAULT_STATE, ...PATTERN_DEFAULTS[pat.id], pattern: pat.id, bgColor: s.bgColor };
-          drawThumb(pat.id, thumbState);
-        }), i * 16);
-      });
+          const mem = patternMemory.get(pat.id);
+          const ts: PatternState = {
+            ...DEFAULT_STATE,
+            ...(PATTERN_DEFAULTS[pat.id] ?? {}),
+            ...(mem ?? {}),
+            pattern:  pat.id,
+            bgColor:  s.bgColor,
+          };
+          drawThumb(pat.id, ts);
+        }), i * 16)
+      );
     } else {
-      // Only update active thumb after short debounce
-      thumbTimer.current = setTimeout(() => {
-        requestAnimationFrame(() => drawThumb(s.pattern, s));
-      }, 200);
+      thumbTimer.current = setTimeout(() =>
+        requestAnimationFrame(() => drawThumb(s.pattern, s))
+      , 200);
     }
 
     if (typeof window !== 'undefined') {
@@ -171,41 +164,33 @@ export function usePatternRenderer(): UsePatternRendererReturn {
   // ── setState ─────────────────────────────────────────────────────
   const setState = useCallback((patch: Partial<PatternState>, activeOnly = true) => {
     const cur = stateRef.current;
-    const isPatternSwitch = patch.pattern !== undefined && patch.pattern !== cur.pattern;
+    const isSwitch = patch.pattern !== undefined && patch.pattern !== cur.pattern;
 
-    if (isPatternSwitch) {
-      // Save current pattern's settings to memory before switching
-      perPatternMemory.set(cur.pattern, {
+    if (isSwitch) {
+      // Save current pattern's state
+      patternMemory.set(cur.pattern, {
         size: cur.size, opacity: cur.opacity, thickness: cur.thickness,
         rotation: cur.rotation, bgColor: cur.bgColor, patColor: cur.patColor,
         animation: cur.animation, animSpeed: cur.animSpeed,
       });
-
-      // Load new pattern: check memory first, fall back to defaults
-      const newId = patch.pattern as string;
-      const mem   = perPatternMemory.get(newId);
-      const defs  = PATTERN_DEFAULTS[newId] ?? PATTERN_DEFAULTS[DEFAULT_STATE.pattern];
-      const restored = mem ?? defs;
-
-      const next: PatternState = {
-        ...cur,
-        ...defs,      // start from defaults
-        ...restored,  // overlay with memory if it exists
-        ...patch,     // always apply the pattern switch
-      };
+      const newId  = patch.pattern as string;
+      const mem    = patternMemory.get(newId);
+      const defs   = PATTERN_DEFAULTS[newId] ?? {};
+      const next: PatternState = { ...cur, ...defs, ...(mem ?? defs), ...patch };
       stateRef.current = next;
       setStateRaw(next);
-      triggerRender(next, true); // redraw ALL thumbs on pattern switch
+      triggerRender(next, true);
     } else {
       const next: PatternState = { ...cur, ...patch };
       stateRef.current = next;
       setStateRaw(next);
-      triggerRender(next, false); // only active thumb on slider drag
+      triggerRender(next, false);
     }
   }, [triggerRender]);
 
   const resetState = useCallback(() => {
-    perPatternMemory.clear();
+    patternMemory.clear();
+    animOffset.current = { x: 0, y: 0 };
     const next = { ...DEFAULT_STATE };
     stateRef.current = next;
     setStateRaw(next);
@@ -218,12 +203,11 @@ export function usePatternRenderer(): UsePatternRendererReturn {
     else drawPreview(s, 0, 0);
   }, [drawPreview, startAnim]);
 
-  // ── initial draw ─────────────────────────────────────────────────
   useEffect(() => {
     drawPreview(stateRef.current, 0, 0);
     PATTERNS.forEach((pat, i) =>
       setTimeout(() => requestAnimationFrame(() =>
-        drawThumb(pat.id, { ...DEFAULT_STATE, ...PATTERN_DEFAULTS[pat.id], pattern: pat.id })
+        drawThumb(pat.id, { ...DEFAULT_STATE, ...(PATTERN_DEFAULTS[pat.id] ?? {}), pattern: pat.id })
       ), i * 20)
     );
     return () => { stopAnim(); cancelAnimationFrame(rafId.current); };

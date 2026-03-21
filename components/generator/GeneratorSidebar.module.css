@@ -1,6 +1,5 @@
-/* ── DESKTOP SIDEBAR ── */
 .sidebar {
-  width: var(--gb-sidebar-w);
+  width: 260px;
   flex-shrink: 0;
   border-right: 1px solid var(--gb-border);
   display: flex;
@@ -14,58 +13,119 @@
 .sidebar::-webkit-scrollbar { width: 3px; }
 .sidebar::-webkit-scrollbar-thumb { background: var(--gb-border); }
 
-.section {
-  padding: 14px 12px;
+/* Install banner */
+.installBanner {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 14px;
+  background: rgba(200,255,0,0.04);
   border-bottom: 1px solid var(--gb-border);
+  text-decoration: none;
   flex-shrink: 0;
+  transition: background 0.14s;
 }
+.installBanner:hover { background: rgba(200,255,0,0.09); }
+.installDot  { width:5px; height:5px; border-radius:50%; background:var(--gb-accent); flex-shrink:0; }
+.installCmd  { font-family:var(--gb-font-mono); font-size:10px; color:var(--gb-accent); flex:1; }
+.installArrow { font-size:11px; color:var(--gb-accent); opacity:0.5; }
+
+/* Section header */
+.sectionHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px 8px;
+  border-bottom: 1px solid var(--gb-border);
+  cursor: pointer;
+  flex-shrink: 0;
+  user-select: none;
+}
+.sectionHead:not(.sectionDisabled):hover { background: var(--gb-s2); }
 
 .sectionTitle {
   font-family: var(--gb-font-mono);
   font-size: 9px;
-  letter-spacing: 0.22em;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: var(--gb-muted2);
+}
+
+.chevron {
+  font-size: 8px;
   color: var(--gb-muted);
-  text-transform: uppercase;
-  text-align: center;
-  margin-bottom: 12px;
-  font-weight: 400;
 }
 
-.sliders   { display: flex; flex-direction: column; gap: 13px; }
-.colorStack { display: flex; flex-direction: column; gap: 10px; }
-
-/* Animation direction grid — 2 cols, text labels */
-.animGrid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 4px;
+/* Section body */
+.sectionBody {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--gb-border);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-.animBtn {
+.sliders { display: flex; flex-direction: column; gap: 12px; }
+
+/* Animate toggle */
+.toggle {
+  width: 36px; height: 20px;
+  background: var(--gb-s3);
+  border: 1px solid var(--gb-border);
+  border-radius: 10px;
+  cursor: pointer;
+  position: relative;
+  transition: background 0.2s, border-color 0.2s;
+  flex-shrink: 0;
+  padding: 0;
+}
+.toggleOn { background: rgba(200,255,0,0.2); border-color: var(--gb-accent); }
+.toggleKnob {
+  position: absolute;
+  top: 2px; left: 2px;
+  width: 14px; height: 14px;
+  background: var(--gb-muted);
+  border-radius: 50%;
+  transition: transform 0.2s, background 0.2s;
+  display: block;
+}
+.toggleOn .toggleKnob {
+  transform: translateX(16px);
+  background: var(--gb-accent);
+}
+
+/* Animate direction dropdown */
+.animSelect {
+  width: 100%;
   font-family: var(--gb-font-mono);
-  font-size: 10px;
-  letter-spacing: 0.05em;
+  font-size: 11px;
+  color: var(--gb-text);
+  background: var(--gb-s2);
   border: 1px solid var(--gb-border);
   border-radius: 4px;
-  background: var(--gb-s2);
-  color: var(--gb-muted2);
+  padding: 8px 28px 8px 10px;
   cursor: pointer;
-  padding: 7px 8px;
-  text-align: center;
-  transition: border-color 0.12s, background 0.12s, color 0.12s;
-  white-space: nowrap;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5'%3E%3Cpath d='M0 0l4 5 4-5z' fill='%23999'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  outline: none;
+  transition: border-color 0.12s;
 }
-.animBtn:hover { border-color: var(--gb-muted2); color: var(--gb-text); background: var(--gb-s3); }
-.animBtnActive { border-color: var(--gb-accent) !important; color: var(--gb-accent) !important; background: rgba(200,255,0,0.08) !important; }
-.animControls  { margin-top: 10px; }
+.animSelect:not(:disabled):hover { border-color: var(--gb-accent); }
+.animSelect:disabled { opacity: 0.4; cursor: not-allowed; }
+.animSelect option { background: #1a1a1a; }
+
+.speedRow { margin-top: 2px; }
+
+/* Colors */
+.colorStack { display: flex; flex-direction: column; gap: 8px; }
 
 .resetBtn {
   width: 100%;
-  margin-top: 10px;
   font-family: var(--gb-font-mono);
   font-size: 10px;
   letter-spacing: 0.08em;
-  padding: 8px 10px;
+  padding: 8px;
   border-radius: 4px;
   cursor: pointer;
   border: 1px solid var(--gb-border);
@@ -76,34 +136,20 @@
 }
 .resetBtn:hover { border-color: #ff5555; color: #ff5555; }
 
-/* Install banner */
-.installBanner {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 11px 12px;
-  background: rgba(200,255,0,0.05);
-  border-bottom: 1px solid var(--gb-border);
-  text-decoration: none;
-  transition: background 0.14s;
-  flex-shrink: 0;
-}
-.installBanner:hover { background: rgba(200,255,0,0.10); }
-.installDot  { width:6px; height:6px; border-radius:50%; background:var(--gb-accent); flex-shrink:0; animation: pulse 2s ease-in-out infinite; }
-.installCmd  { font-family:var(--gb-font-mono); font-size:10px; color:var(--gb-accent); flex:1; letter-spacing:0.03em; }
-.installArrow { font-size:11px; color:var(--gb-accent); opacity:0.6; }
-
-@keyframes pulse {
-  0%,100% { opacity:1; box-shadow: 0 0 4px var(--gb-accent); }
-  50%      { opacity:0.5; }
+/* Future sections */
+.sectionDisabled { cursor: default; opacity: 0.45; }
+.futureBadge {
+  font-family: var(--gb-font-mono);
+  font-size: 8px;
+  color: var(--gb-muted);
+  background: var(--gb-s3);
+  border: 1px solid var(--gb-border);
+  border-radius: 3px;
+  padding: 2px 6px;
+  letter-spacing: 0.06em;
 }
 
-/* ══════════════════════════════════════════
-   MOBILE — sidebar is the SCROLLABLE section
-   that lives BELOW canvas+code in the page.
-   It gets flex:1 and overflow-y:auto so it
-   fills remaining viewport and scrolls.
-══════════════════════════════════════════ */
+/* Mobile */
 @media (max-width: 768px) {
   .sidebar {
     width: 100%;
@@ -111,24 +157,8 @@
     min-height: 0;
     border-right: none;
     border-top: 1px solid var(--gb-border);
-    overflow-y: auto;
-    overflow-x: hidden;
-    /* order is set via parent .shell > *:nth-child(1) { order: 2 } */
   }
-
-  .installBanner {
-    /* Show on mobile — it's the first item in the scroll area */
-    display: flex;
-    padding: 14px 16px;
-  }
-  .installCmd { font-size: 12px; }
-
-  .section { padding: 14px 16px; }
-
-  .sectionTitle { font-size: 10px; margin-bottom: 14px; }
-
-  /* Bigger touch targets on mobile */
-  .animBtn { min-height: 40px; font-size: 16px; }
-
-  .resetBtn { padding: 12px; font-size: 11px; margin-top: 12px; }
+  .installBanner { padding: 12px 16px; }
+  .sectionHead { padding: 12px 16px 10px; }
+  .sectionBody { padding: 12px 16px; }
 }

@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import type { PatternState, AnimationDir } from '@/types/pattern';
 import Link from 'next/link';
 import { PatternGrid } from './PatternGrid';
@@ -8,14 +9,13 @@ import { ColorPicker } from './ColorPicker';
 import { Presets }     from './Presets';
 import styles from './GeneratorSidebar.module.css';
 
-const ANIM_DIRS: { id: AnimationDir; icon: string; title: string }[] = [
-  { id: 'none',       icon: '✕',  title: 'off' },
-  { id: 'left',       icon: '←',  title: 'left' },
-  { id: 'right',      icon: '→',  title: 'right' },
-  { id: 'up',         icon: '↑',  title: 'up' },
-  { id: 'down',       icon: '↓',  title: 'down' },
-  { id: 'diag-left',  icon: '↙',  title: 'diag ↙' },
-  { id: 'diag-right', icon: '↘',  title: 'diag ↘' },
+const ANIM_DIRS: { id: AnimationDir; label: string }[] = [
+  { id: 'left',       label: '← Left'       },
+  { id: 'right',      label: '→ Right'      },
+  { id: 'up',         label: '↑ Up'         },
+  { id: 'down',       label: '↓ Down'       },
+  { id: 'diag-left',  label: '↙ Diag Left'  },
+  { id: 'diag-right', label: '↘ Diag Right' },
 ];
 
 interface Props {
@@ -26,6 +26,11 @@ interface Props {
 }
 
 export function GeneratorSidebar({ state, thumbRefs, onChange, onReset }: Props) {
+  const [patternsOpen, setPatternsOpen] = useState(true);
+  const [presetsOpen,  setPresetsOpen]  = useState(false);
+
+  const animOn = state.animation !== 'none';
+
   return (
     <aside className={styles.sidebar}>
 
@@ -36,44 +41,63 @@ export function GeneratorSidebar({ state, thumbRefs, onChange, onReset }: Props)
         <span className={styles.installArrow}>→</span>
       </Link>
 
-      {/* Patterns */}
-      <section className={styles.section}>
-        <h3 className={styles.sectionTitle}>patterns</h3>
-        <PatternGrid
-          active={state.pattern}
-          thumbRefs={thumbRefs}
-          onSelect={id => onChange({ pattern: id }, false)}
-        />
-      </section>
+      {/* ── PATTERNS (collapsible) ── */}
+      <div className={styles.sectionHead} onClick={() => setPatternsOpen(o => !o)}>
+        <span className={styles.sectionTitle}>PATTERNS</span>
+        <span className={styles.chevron}>{patternsOpen ? '▲' : '▼'}</span>
+      </div>
+      {patternsOpen && (
+        <div className={styles.sectionBody}>
+          <PatternGrid
+            active={state.pattern}
+            thumbRefs={thumbRefs}
+            onSelect={id => onChange({ pattern: id }, false)}
+          />
+        </div>
+      )}
 
-      {/* Adjust */}
-      <section className={styles.section}>
-        <h3 className={styles.sectionTitle}>adjust</h3>
+      {/* ── ADJUST ── */}
+      <div className={styles.sectionHead}>
+        <span className={styles.sectionTitle}>ADJUST</span>
+      </div>
+      <div className={styles.sectionBody}>
         <div className={styles.sliders}>
-          <Slider label="size"      value={state.size}      min={4}  max={state.pattern === 'rect' ? 240 : 80} unit="px" onChange={v => onChange({ size: v })} />
-          <Slider label="opacity"   value={state.opacity}   min={1}  max={100} unit="%" onChange={v => onChange({ opacity: v })} />
-          <Slider label="thickness" value={state.thickness} min={1}  max={20}  unit="px" onChange={v => onChange({ thickness: v })} />
-          <Slider label="rotation"  value={state.rotation}  min={0}  max={180} unit="°" onChange={v => onChange({ rotation: v })} />
+          <Slider label="size"      value={state.size}      min={4}   max={state.pattern === 'rect' ? 240 : 80} unit="px" onChange={v => onChange({ size: v })} />
+          <Slider label="opacity"   value={state.opacity}   min={1}   max={100} unit="%" onChange={v => onChange({ opacity: v })} />
+          <Slider label="thickness" value={state.thickness} min={1}   max={20}  unit="px" onChange={v => onChange({ thickness: v })} />
+          <Slider label="rotation"  value={state.rotation}  min={0}   max={180} unit="°" onChange={v => onChange({ rotation: v })} />
         </div>
-      </section>
+      </div>
 
-      {/* Animation */}
-      <section className={styles.section}>
-        <h3 className={styles.sectionTitle}>animate</h3>
-        <div className={styles.animGrid}>
+      {/* ── ANIMATE ── */}
+      <div className={styles.sectionHead}>
+        <span className={styles.sectionTitle}>ANIMATE</span>
+        {/* Toggle switch */}
+        <button
+          className={`${styles.toggle} ${animOn ? styles.toggleOn : ''}`}
+          onClick={() => onChange({ animation: animOn ? 'none' : 'right' })}
+          title={animOn ? 'Stop animation' : 'Start animation'}
+        >
+          <span className={styles.toggleKnob} />
+        </button>
+      </div>
+      <div className={styles.sectionBody}>
+        {/* Direction dropdown */}
+        <select
+          className={styles.animSelect}
+          value={animOn ? state.animation : ''}
+          disabled={!animOn}
+          onChange={e => onChange({ animation: e.target.value as AnimationDir })}
+        >
+          {!animOn && <option value="">Direction</option>}
           {ANIM_DIRS.map(d => (
-            <button
-              key={d.id}
-              className={`${styles.animBtn} ${state.animation === d.id ? styles.animBtnActive : ''}`}
-              onClick={() => onChange({ animation: d.id })}
-              title={d.title}
-            >
-              {d.title}
-            </button>
+            <option key={d.id} value={d.id}>{d.label}</option>
           ))}
-        </div>
-        {state.animation !== 'none' && (
-          <div className={styles.animControls}>
+        </select>
+
+        {/* Speed slider — only when animating */}
+        {animOn && (
+          <div className={styles.speedRow}>
             <Slider
               label="speed"
               value={state.animSpeed ?? 40}
@@ -84,23 +108,40 @@ export function GeneratorSidebar({ state, thumbRefs, onChange, onReset }: Props)
             />
           </div>
         )}
-      </section>
+      </div>
 
-      {/* Colours */}
-      <section className={styles.section}>
-        <h3 className={styles.sectionTitle}>colours</h3>
-        <div className={styles.colorStack}>
-          <ColorPicker label="background" value={state.bgColor}  onChange={v => onChange({ bgColor: v })} />
-          <ColorPicker label="pattern"    value={state.patColor} onChange={v => onChange({ patColor: v })} />
-        </div>
+      {/* ── COLORS ── */}
+      <div className={styles.sectionHead}>
+        <span className={styles.sectionTitle}>COLORS</span>
+      </div>
+      <div className={styles.sectionBody}>
+        <ColorPicker label="background" value={state.bgColor}  onChange={v => onChange({ bgColor: v })} />
+        <ColorPicker label="pattern"    value={state.patColor} onChange={v => onChange({ patColor: v })} />
         <button className={styles.resetBtn} onClick={onReset}>↺ reset all</button>
-      </section>
+      </div>
 
-      {/* Presets */}
-      <section className={styles.section}>
-        <h3 className={styles.sectionTitle}>presets</h3>
-        <Presets state={state} onSelect={patch => onChange(patch)} />
-      </section>
+      {/* ── PRESETS (collapsible) ── */}
+      <div className={styles.sectionHead} onClick={() => setPresetsOpen(o => !o)}>
+        <span className={styles.sectionTitle}>PRESETS</span>
+        <span className={styles.chevron}>{presetsOpen ? '▲' : '▼'}</span>
+      </div>
+      {presetsOpen && (
+        <div className={styles.sectionBody}>
+          <Presets state={state} onSelect={patch => onChange(patch)} />
+        </div>
+      )}
+
+      {/* ── GRADIENTS (future) ── */}
+      <div className={`${styles.sectionHead} ${styles.sectionDisabled}`}>
+        <span className={styles.sectionTitle}>GRADIENTS</span>
+        <span className={styles.futureBadge}>soon</span>
+      </div>
+
+      {/* ── TEXTURES (future) ── */}
+      <div className={`${styles.sectionHead} ${styles.sectionDisabled}`}>
+        <span className={styles.sectionTitle}>TEXTURES</span>
+        <span className={styles.futureBadge}>soon</span>
+      </div>
 
     </aside>
   );
