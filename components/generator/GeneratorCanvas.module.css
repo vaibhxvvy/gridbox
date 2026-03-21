@@ -1,7 +1,21 @@
-/* Stage — the dark 16:9 container that all preview modes live inside */
+/*
+  LAYOUT LOGIC:
+  - .stage fills available viewport height (calc-based)
+  - .frame is centered inside stage, keeps its aspect ratio
+  - For 16:9: width fills stage, height follows ratio. If height > stage height, 
+    then height=100% and width follows ratio instead.
+  - For phone 9:16: portrait box, height fills stage, width follows ratio.
+  - For custom: same as 16:9 but with custom ratio.
+  
+  The key CSS trick: width:100% + max-height:100% + aspect-ratio on the frame.
+  The browser will pick the smaller of the two constraints automatically.
+*/
+
+/* Stage — fills viewport minus fixed chrome heights */
 .stage {
   width: 100%;
-  aspect-ratio: 16 / 9;
+  height: calc(100vh - 48px - 41px - 32px);
+  min-height: 180px;
   background: #050505;
   display: flex;
   align-items: center;
@@ -11,17 +25,18 @@
   box-sizing: border-box;
 }
 
-/* Pattern frame — the actual canvas container */
+/* Frame — aspect ratio box that fits inside the stage */
 .frame {
   position: relative;
   overflow: hidden;
   box-shadow: 0 0 0 1px var(--gb-border);
-  /* Web/custom: fills width at given aspect ratio */
+  /* Width fills stage, height follows aspect-ratio, capped at stage height */
   width: 100%;
   max-height: 100%;
+  /* aspect-ratio is set via inline style from props */
 }
 
-/* Phone mode: portrait frame centred inside the stage */
+/* Phone mode: height fills stage, width follows 9:16 */
 .framePhone {
   width: auto;
   height: 100%;
@@ -47,11 +62,12 @@
   padding: 2px 8px; border-radius: 3px; pointer-events: none;
 }
 
-/* Mobile */
+/* Mobile — full width, no padding */
 @media (max-width: 768px) {
   .stage {
-    padding: 0;
+    height: auto;
     aspect-ratio: 16 / 9;
+    padding: 0;
   }
   .frame {
     outline: 2px solid var(--gb-accent);
