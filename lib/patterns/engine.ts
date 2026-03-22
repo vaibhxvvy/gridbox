@@ -413,3 +413,37 @@ export function getImgCSS(state: PatternState): string {
   );
   return lines.length ? lines.join('\n') : '/* no image for this pattern */';
 }
+
+// ── CSS-animatable patterns ────────────────────────────────────────────
+// These patterns use pure CSS gradients — no SVG, no canvas.
+// Their background-position can be animated seamlessly by GSAP.
+export const CSS_ANIMATABLE = new Set([
+  'dots', 'grid', 'rect', 'diagonal', 'hatch', 'carbon', 'halftone', 'plus',
+]);
+
+// Extract background-image and background-size from a pattern's CSS output.
+// Returns null for patterns that use SVG url() — those fall back to canvas.
+export function getAnimatableCSS(state: PatternState): {
+  backgroundImage: string;
+  backgroundSize:  string;
+  backgroundPosition?: string;
+} | null {
+  if (!CSS_ANIMATABLE.has(state.pattern)) return null;
+  const pat = PATTERNS.find(p => p.id === state.pattern);
+  if (!pat) return null;
+
+  const raw = pat.css(state);
+  const lines = raw.split('\n');
+
+  const imgLine  = lines.find(l => l.startsWith('background-image:'));
+  const sizeLine = lines.find(l => l.startsWith('background-size:'));
+  const posLine  = lines.find(l => l.startsWith('background-position:'));
+
+  if (!imgLine || !sizeLine) return null;
+
+  return {
+    backgroundImage:    imgLine.replace('background-image:', '').replace(/;$/, '').trim(),
+    backgroundSize:     sizeLine.replace('background-size:', '').replace(/;$/, '').trim(),
+    backgroundPosition: posLine ? posLine.replace('background-position:', '').replace(/;$/, '').trim() : '0px 0px',
+  };
+}

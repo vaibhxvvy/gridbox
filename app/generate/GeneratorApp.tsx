@@ -207,6 +207,7 @@ export default function GeneratorApp() {
             onCustomH={setCustomH}
             customWStr={customW}
             customHStr={customH}
+            isPaused={isPaused}
           />
 
           {/* Info bar */}
