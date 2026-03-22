@@ -1,7 +1,8 @@
 # gridmint — Architecture & Code Map
+*Last updated: March 2026*
 
-A reference doc for understanding where everything lives and how it connects.
-Use this before editing anything to avoid breaking other parts.
+Complete reference for understanding every file, system, and rule in the codebase.
+Read this before editing anything.
 
 ---
 
@@ -10,78 +11,64 @@ Use this before editing anything to avoid breaking other parts.
 ```
 gridmint/
 ├── app/
-│   ├── layout.tsx              ← Root layout. FONTS loaded here as <link> tags ONLY.
-│   ├── globals.css             ← Global resets. No @import ever.
-│   ├── page.tsx                ← Landing page component
-│   ├── page.module.css         ← Landing page styles
+│   ├── layout.tsx                    ← Root layout. FONTS via <link> tags ONLY. No @import in CSS ever.
+│   ├── globals.css                   ← @import tailwindcss + ../styles/globals.css only. Nothing else.
+│   ├── page.tsx + page.module.css    ← Landing page
 │   ├── generate/
-│   │   ├── page.tsx            ← Dynamic import wrapper (ssr:false)
-│   │   ├── GeneratorApp.tsx    ← Main generator page — topbar, shell, layout
-│   │   ├── GeneratorApp.module.css
+│   │   ├── page.tsx                  ← Dynamic import wrapper (ssr:false)
+│   │   ├── GeneratorApp.tsx          ← Main generator: topbar, shell, state, keyboard shortcuts
+│   │   ├── GeneratorApp.module.css   ← Layout: page/topbar/shell/rightCol/infoBar/codePanel
 │   │   └── loading.tsx
 │   └── install/
-│       ├── page.tsx
-│       └── page.module.css
+│       ├── page.tsx + page.module.css
 ├── components/
 │   └── generator/
-│       ├── GeneratorSidebar.tsx/.module.css   ← Left sidebar — all controls
-│       ├── GeneratorCanvas.tsx/.module.css    ← Canvas preview area
+│       ├── GeneratorSidebar.tsx/.module.css   ← Left sidebar, all controls
+│       ├── GeneratorCanvas.tsx/.module.css    ← Preview stage, CSS seamless layer, GSAP tween
 │       ├── CodeOutput.tsx/.module.css         ← Language tabs + copy + export
 │       ├── ExportMenu.tsx/.module.css         ← Export dropdown (PNG/JPG/SVG/CSS)
 │       ├── PatternGrid.tsx/.module.css        ← 3-col pattern thumbnail grid
-│       ├── Slider.tsx/.module.css             ← Reusable range slider
-│       ├── ColorPicker.tsx/.module.css        ← HSB color picker with quick swatches
+│       ├── Slider.tsx/.module.css             ← Radix UI range slider with debounce
+│       ├── ColorPicker.tsx/.module.css        ← HSB picker, inline expand (no absolute positioning)
 │       └── Presets.tsx/.module.css            ← Preset list with canvas thumbnails
 ├── lib/
 │   ├── patterns/
-│   │   ├── engine.ts           ← ALL 12 pattern draw functions + drawSetup + CSS gen
-│   │   └── presets.ts          ← 12 preset definitions (name, state, accent)
-│   ├── use-pattern-renderer.ts ← Core rendering hook — animation loop, state, thumbs
-│   ├── url-state.ts            ← Encode/decode state to/from URL params
-│   ├── codegen.ts              ← CSS/SCSS/Tailwind/React/Next.js/TSX code generation
-│   └── use-github-stars.ts     ← Fetches live star count from GitHub API
+│   │   ├── engine.ts     ← ALL 12 pattern draw() + css() + CSS_ANIMATABLE + getAnimatableCSS
+│   │   └── presets.ts    ← 12 preset definitions
+│   ├── use-pattern-renderer.ts  ← Core hook: tile cache, GSAP ticker, per-pattern memory, pausedRef
+│   ├── store.ts                 ← Zustand store (UI state: layout, pause, toast)
+│   ├── url-state.ts             ← Encode/decode PatternState to/from URL params
+│   ├── codegen.ts               ← CSS/SCSS/Tailwind/React/Next.js/TSX code generation
+│   └── use-github-stars.ts      ← Live star count from GitHub API
 ├── styles/
-│   ├── tokens.css              ← ALL CSS variables (colours, spacing, fonts)
-│   └── globals.css             ← Base resets, imports tokens.css
+│   ├── tokens.css    ← ALL CSS variables
+│   └── globals.css   ← Base resets, imports tokens.css (NO @import for fonts)
 ├── types/
-│   └── pattern.ts              ← TypeScript types: PatternState, Pattern, AnimationDir
+│   └── pattern.ts    ← PatternState, Pattern, Preset, AnimationDir types
 └── packages/
-    └── gridmint/               ← npm package source (not yet published)
+    └── gridmint/     ← npm package source (unpublished)
 ```
 
 ---
 
-## Core Data Flow
+## The 12 Patterns
 
-```
-User interaction
-      ↓
-GeneratorSidebar / GeneratorApp
-  calls setState(patch)
-      ↓
-usePatternRenderer.setState()
-  → saves old pattern to patternMemory (if switching)
-  → builds next PatternState
-  → calls triggerRender(next, redrawAllThumbs)
-      ↓
-triggerRender()
-  → if animation !== 'none': startAnim()
-  → else: drawPreview(s, 0, 0) via RAF
-  → schedules thumb update
-  → encodes state to URL
-      ↓
-drawPreview(s, ox, oy)
-  → clears canvas
-  → fills bgColor
-  → calls drawPattern(ctx, s, extMult, ox, oy)
-      ↓
-engine.ts drawPattern()
-  → finds pattern by id
-  → calls pat.draw(ctx, state, extMult, offsetX, offsetY)
-      ↓
-drawSetup() translates/rotates canvas
-  → pattern draws its shapes
-```
+| ID | Name | CSS Type | Seamless CSS Anim |
+|----|------|----------|-------------------|
+| noise | Noise | SVG filter | ✗ canvas fallback |
+| dots | Dots | radial-gradient | ✅ |
+| grid | Grid | linear-gradient | ✅ |
+| rect | Rectangle | linear-gradient | ✅ |
+| diagonal | Diagonal | repeating-linear-gradient | ✅ |
+| hatch | Hatch | repeating-linear-gradient | ✅ |
+| carbon | Carbon | linear-gradient | ✅ |
+| halftone | Halftone | radial-gradient | ✅ |
+| plus | Plus | linear-gradient | ✅ |
+| checker | Checker | linear-gradient | ✅ |
+| waves | Waves | SVG cubic bezier | ✅ |
+| circuit | Circuit | SVG inline | ✗ canvas fallback |
+
+**Hex was removed** — replaced by checker (pure geometric, perfectly seamless).
 
 ---
 
@@ -89,144 +76,199 @@ drawSetup() translates/rotates canvas
 
 ```ts
 interface PatternState {
-  pattern:   string;       // 'noise'|'dots'|'grid'|'rect'|'diagonal'|'hatch'|
-                           // 'carbon'|'halftone'|'plus'|'hex'|'waves'|'circuit'
-  bgColor:   string;       // hex, e.g. '#0a0a0a'
+  pattern:   string;       // one of the 12 IDs above
+  bgColor:   string;       // hex e.g. '#0a0a0a'
   patColor:  string;       // hex
-  size:      number;       // pattern tile size in px (4-240)
-  opacity:   number;       // 1-100
-  thickness: number;       // stroke width (1-20)
-  rotation:  number;       // degrees (0-180)
+  size:      number;       // tile size px (4–240 for rect, 4–80 others)
+  opacity:   number;       // 1–100
+  thickness: number;       // stroke width 1–20
+  rotation:  number;       // degrees 0–180
   animation: AnimationDir; // 'none'|'left'|'right'|'up'|'down'|'diag-left'|'diag-right'
-  animSpeed: number;       // px/sec (5-200)
+  animSpeed: number;       // px/sec 10–200
 }
 ```
 
 ---
 
-## Animation System
+## Animation System — Two Modes
 
-**File:** `lib/use-pattern-renderer.ts`
+### Mode 1: CSS Seamless (10 patterns)
+For patterns in `CSS_ANIMATABLE` set when `animation !== 'none'`:
 
-The animation loop uses `requestAnimationFrame`. On each frame:
+1. Canvas hidden (`opacity: 0`) — still drawn for export
+2. `<div ref={cssLayerRef}>` overlaid with `background-image` from `getAnimatableCSS(state)`
+3. GSAP tween mutates `offsetRef.current.{x,y}` each tick
+4. Offset wraps to `[0, tileW)` / `[0, tileH)` via modulo — **seamless forever**
+5. `cssLayerRef.current.style.backgroundPosition = "${x}px ${y}px"` written each tick
+6. Tween only **restarts** when direction/speed/tileSize changes (keyed by `tweenKey`)
+7. Colour/size/opacity changes update CSS div style directly — no tween restart
+8. Debounced 60ms to prevent spam on rapid slider drags
 
-1. If `pausedRef.current === true` — keeps RAF alive but skips draw (true pause)
-2. Increments `animOffset.x / .y` by `speed * deltaTime`
-3. Wraps offset to `[0, size)` — this is what makes it seamless (no jumps)
-4. Calls `drawPreview(state, ox, oy)`
-5. `drawPreview` calls `drawPattern(ctx, s, extMult=3, ox, oy)` (extMult=3 for perf during anim)
-6. `drawSetup` in engine.ts applies the offset as a pre-rotation translation
+**Result**: GPU-composited, zero JS per frame for the pattern itself, mathematically perfect tiling.
 
-**Special case — noise pattern:**
-Noise uses `Math.random()` so it can't use offset (would flicker). Instead:
-- A 3× canvas tile is drawn once and cached (`tileCache` ref)
-- Cache is invalidated when state changes (colour, size, etc.)
-- On each frame, the cached tile is translated using `ctx.drawImage`
+### Mode 2: Canvas Tile Cache (noise, circuit)
+For patterns not in `CSS_ANIMATABLE`:
 
-**Pause vs Stop:**
-- `pausedRef.current = true` → pauses visually, animation direction preserved in state
-- `setState({ animation: 'none' })` → stops completely, resets offset
+1. Pattern drawn ONCE into a `2×canvas` offscreen tile
+2. GSAP ticker advances `offsetRef.current.{x,y}` each tick
+3. `ctx.drawImage(tile, ...)` blitted at 4 positions for seamless wrap
+4. Noise redraws a 256px grain tile each frame (CRT flicker effect)
 
 ---
 
-## Pattern Engine
+## CSS Seamless Animation — Key Functions
 
-**File:** `lib/patterns/engine.ts`
+**`engine.ts`:**
+```ts
+CSS_ANIMATABLE: Set<string>  // which patterns support CSS animation
 
-### drawSetup(ctx, rotation, W, H, extMult, offsetX, offsetY)
-Sets up the canvas transform before drawing:
-- Translates to canvas centre
-- Rotates by `rotation` degrees
-- Translates back by `(-W * extMult / 2 + offsetX, -H * extMult / 2 + offsetY)`
+getAnimatableCSS(state): {
+  backgroundImage: string,
+  backgroundSize:  string,
+  backgroundPosition: string,
+  tileW: number,   // parsed px width — GSAP animates by this amount
+  tileH: number,   // parsed px height
+} | null
+```
 
-`extMult` controls how much larger than the canvas the pattern draws.
-- `extMult=5` — static preview (full quality, covers canvas even when rotated)
-- `extMult=3` — animated preview (faster, still covers canvas with rotation)
-- `extMult=2` — thumbnails (small canvas, minimal overdraw needed)
-
-### Adding a new pattern
-1. Add entry to `PATTERNS` array in `engine.ts`
-2. Add defaults to `PATTERN_DEFAULTS` in `use-pattern-renderer.ts`
-3. Add a preset in `presets.ts` (optional)
-4. Pattern `draw()` must accept `(ctx, state, extMult, offsetX, offsetY)` signature
-5. Must call `drawSetup(ctx, rotation, W, H, extMult, offsetX, offsetY)` for offset/anim to work
-6. Must call `ctx.restore()` at the end
+**`GeneratorCanvas.tsx`:**
+- `buildTween(css, animation, speed)` — creates `gsap.to(proxy, { repeat: -1 })`, wraps offset
+- `tweenKeyRef` — `"direction|speed|tileW|tileH"` — only rebuilds tween when this changes
+- `isPaused` prop → `tween.pause()` / `tween.resume()`
 
 ---
 
 ## Per-Pattern Memory
 
-When switching patterns, the current pattern's settings are saved to `patternMemory` (a `Map`).
-When switching back, those settings are restored.
+When switching patterns `patternMemory` (Map) saves current state:
+- Switch away from dots → saves dots settings
+- Switch back to dots → restores them
+- `pausedRef.current = false` on every pattern switch (prevents stale pause)
+- `animOffset.current = { x: 0, y: 0 }` reset on pattern switch
 
-This means: editing dots → switching to grid → switching back to dots restores your dots settings.
+---
 
-Presets apply the **full preset state** including pattern switch. This triggers the memory save/restore flow.
+## Preview Modes (GeneratorCanvas)
+
+The `stage` div is always `height: calc(100vh - 48px - 32px)`.
+The `frame` div inside it is driven by `aspectRatio` inline style.
+
+| Layout | frameAspect | Canvas behaviour |
+|--------|-------------|-----------------|
+| Web 16:9 | `16/9` | fills stage width |
+| Phone | `9/16` | portrait box centred |
+| Custom | `W/H` | user-entered ratio |
+
+Canvas is always 1920×1080 internally. CSS `object-fit: cover` crops to frame ratio — no squeezing.
+
+Layout toggle is a floating pill overlay inside the stage (not a separate bar).
 
 ---
 
 ## Sidebar Sections
 
-| Section    | Collapsible | What it does |
-|------------|-------------|--------------|
-| PATTERNS   | ✓           | 3-col thumbnail grid, click to switch pattern |
-| ADJUST     | ✗           | size / opacity / thickness / rotation sliders |
-| ANIMATE    | ✗           | toggle on/off + direction grid + speed + play/pause |
-| COLORS     | ✗           | HSB color picker for bg and pattern + reset |
-| PRESETS    | ✓           | Canvas thumbnail list, applies full preset state |
-| GRADIENTS  | — (future)  | Placeholder |
-| TEXTURES   | — (future)  | Placeholder |
+| Section | Collapsible | Libraries |
+|---------|-------------|-----------|
+| INSTALLATION | — | — |
+| PATTERNS | ✓ Radix Collapsible + Motion | always mounted (display:none when closed, prevents thumb loss) |
+| ADJUST | ✗ | Radix Slider + use-debounce (30ms for size/rotation) |
+| ANIMATE | ✗ | Motion spring toggle, Radix Tooltip on direction buttons |
+| COLORS | ✗ | Custom HSB picker, inline expand (no absolute) |
+| PRESETS | ✓ Radix Collapsible + Motion | always mounted |
+| GRADIENTS | — (future) | — |
+| TEXTURES | — (future) | — |
 
 ---
 
-## Code Generation
+## Color Picker
 
-**File:** `lib/codegen.ts`
+Fully custom HSB picker:
+- SB square: `backgroundColor: hsvToHex(hue, 1, 1)` with white→transparent + black→transparent overlays
+- Hue bar: CSS `linear-gradient` of rainbow
+- Opens **inline** (not absolute positioned) — sidebar stretches to fit it
+- Motion `height: 0 → auto` animation
+- Quick swatches row at bottom
 
-Takes `PatternState` and outputs code for:
-- `css` — plain CSS background-image
-- `scss` — SCSS variable format
-- `tailwind` — Tailwind arbitrary value style
-- `react` — React inline style object
-- `nextjs` — Next.js style with CSS module
-- `tsx` — TypeScript React component
+---
+
+## Libraries in Use
+
+| Library | Where | Purpose |
+|---------|-------|---------|
+| GSAP 3.14 | GeneratorCanvas, use-pattern-renderer | CSS animation tween + canvas RAF ticker |
+| Motion (Framer) | Sidebar, Canvas, App, PatternGrid | UI animations, spring transitions, AnimatePresence |
+| Radix UI | Slider, Collapsible, Tooltip | Accessible UI primitives |
+| Zustand | store.ts | Global UI state |
+| use-debounce | Slider | Prevents thrash on size/rotation drags |
+| lucide-react | SVG icons throughout | Chevrons, arrows, directions |
+
+---
+
+## Design Tokens (styles/tokens.css)
+
+| Variable | Value | Used for |
+|----------|-------|---------|
+| `--gb-bg` | `#0a0a0a` | Page background |
+| `--gb-surface` | `#111111` | Sidebar |
+| `--gb-s2` | `#181818` | Topbar, info bar |
+| `--gb-s3` | `#202020` | Buttons, inputs |
+| `--gb-border` | `#2c2c2c` | All borders |
+| `--gb-accent` | `#c8ff00` | Lime green — active states, logo |
+| `--gb-text` | `#f0f0f0` | Primary text |
+| `--gb-muted` | `#606060` | Dimmed labels |
+| `--gb-muted2` | `#999999` | Secondary text |
+| `--gb-font-mono` | Space Mono | All UI text |
 
 ---
 
 ## URL State
 
-**File:** `lib/url-state.ts`
-
-All state is encoded in URL params on every change (`history.replaceState`).
-This enables shareable links. Params: `p` (pattern), `bg`, `pc` (patColor), `s` (size), `o` (opacity), `t` (thickness), `r` (rotation), `an` (animation), `spd` (animSpeed).
-
----
-
-## Design Tokens
-
-**File:** `styles/tokens.css`
-
-| Variable         | Value     | Used for |
-|------------------|-----------|----------|
-| `--gb-bg`        | `#0a0a0a` | Page background |
-| `--gb-surface`   | `#111111` | Sidebar background |
-| `--gb-s2`        | `#181818` | Topbar, info bar |
-| `--gb-s3`        | `#202020` | Buttons, inputs |
-| `--gb-border`    | `#2c2c2c` | All borders |
-| `--gb-accent`    | `#c8ff00` | Lime green — active states, logo |
-| `--gb-text`      | `#f0f0f0` | Primary text |
-| `--gb-muted`     | `#606060` | Dimmed labels |
-| `--gb-muted2`    | `#999999` | Secondary text |
-| `--gb-font-mono` | Space Mono | All UI text |
+All PatternState encoded in URL on every change via `history.replaceState`.
+Params: `pat`, `bg`, `col`, `sz`, `op`, `tk`, `rot`, `an`, `spd`.
+Shareable links work out of the box.
 
 ---
 
-## CRITICAL RULES
+## Code Generation (lib/codegen.ts)
 
-1. **NO `@import` in any CSS file** — fonts are loaded via `<link>` tags in `app/layout.tsx` only
-2. **Never redraw all 12 thumbnails** when only one pattern changes — use `triggerRender(next, false)`
-3. **Preset apply** triggers `isSwitch=true` in setState which saves/restores per-pattern memory
-4. **Noise pattern** cannot use offset animation — it uses tileCache instead
-5. **extMult must be ≥ 3** for animated draws, ≥ 5 for static (coverage during rotation)
-6. **pausedRef** controls pause state — never set `animation: 'none'` to "pause"
+Takes `PatternState`, outputs:
+- `css` — plain CSS `.bg-pattern { ... }`
+- `scss` — with nested usage comment
+- `tailwind` — arbitrary value classes
+- `react` — inline style object + component
+- `nextjs` — CSS module + component
+- `tsx` — TypeScript React component
 
+---
+
+## Export (ExportMenu.tsx)
+
+Renders offscreen canvas at requested size, uses `canvas.toBlob()`:
+- PNG tile 512px
+- PNG HD 1920×1080
+- PNG 4K 3840×2160
+- JPG HD 1920×1080
+- SVG vector tile
+- CSS file download
+
+---
+
+## PERMANENT RULES
+
+1. **NO `@import` for Google Fonts in ANY CSS file** — fonts load via `<link>` in `app/layout.tsx` only
+2. **Never redraw all 12 thumbnails** on slider drag — only redraw active pattern
+3. **Pattern thumbnails always mounted** (display:none to hide) — prevents canvas content loss
+4. **pausedRef** controls pause — never set `animation: 'none'` to pause
+5. **Tween restarts only on** direction/speed/tileSize change — CSS property updates are instant
+6. **Hex pattern is gone** — checker replaced it
+7. **Canvas internal res is 1920×1080** — display scaling via CSS object-fit:cover
+
+---
+
+## What's Next
+
+- Gradient layer (CSS overlay: radial glow, spotlight, mesh)
+- Texture overlay (film grain, scanlines, vignette)
+- More geometric patterns (triangles, herringbone, brick)
+- npm publish for packages/gridmint
+- Mobile layout polish
